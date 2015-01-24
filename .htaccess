@@ -1,0 +1,36 @@
+#
+#   Author :    Luke Brown
+#   License:    Contracted work - Written permission required from me for third party use.
+#   Created:    January 2015
+#   Contact:    me@luke.sx
+#
+
+RewriteEngine On
+Options -Indexes
+ErrorDocument 403 404.php
+ErrorDocument 404 404.php
+
+RewriteEngine On
+RewriteBase /
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/$1\.php -f
+RewriteRule ^([^/]+)/?$ $1.php [L]
+
+# sets the true header of a web page
+<FilesMatch "\.(?i:xml)$">
+      ForceType application/octet-stream
+      Header set Content-Disposition attachment
+</FilesMatch>
+
+# blocks the assets directory from been effected by rewrite
+RewriteRule ^assets/ - [L,NC]
+
+# Tells css that it's actually css
+AddType text/css .css 
+
+# RewriteRule ^shop/([^/]+)$ shop.php?product-type=$1
+
+
+php_flag  display_errors        on
+php_value error_reporting       2039
