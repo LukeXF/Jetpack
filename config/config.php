@@ -10,9 +10,9 @@
 	 */
 
 	define("DB_HOST", "localhost");
-	define("DB_NAME", "mt2");
-	define("DB_USER", "minetract");
-	define("DB_PASS", "minetract615218009");
+	define("DB_NAME", "");
+	define("DB_USER", "");
+	define("DB_PASS", "");
 ?>
 
 <?php
