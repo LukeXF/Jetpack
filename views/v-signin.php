@@ -13,7 +13,7 @@
 	<div class="row">
 		<div class="col-md-4 col-md-offset-4 contentbox">
 
-			<form method="post" action="login" name="loginform">
+			<form method="post" action="login<?php echo $dotPHP; ?>" name="loginform">
 						
 				<?php
 				// show potential errors / feedback (from login object)
@@ -46,17 +46,17 @@
 				    }
 				}
 				?>
-				<a class="brand animate" href="http://tickets.ashour.pw/"><?php echo $brand; ?></a>
-			    <input id="user_name" type="text" name="user_name" required placeholder="<?php echo WORDING_USERNAME; ?>" />
-			    <input id="user_password" type="password" name="user_password" autocomplete="off" required placeholder="<?php echo WORDING_PASSWORD; ?>" />
+				<a class="brand animate" href="<?php echo $domain; ?>"><?php echo $brand; ?></a>
+			    <input id="user_name" type="text" name="user_name" required placeholder="Your Username" />
+			    <input id="user_password" type="password" name="user_password" autocomplete="off" required placeholder="Your Password" />
 
 			    <input type="checkbox" id="user_rememberme" name="user_rememberme" value="1" />
-			    <label for="user_rememberme"><?php echo WORDING_REMEMBER_ME; ?></label>
-			    <input type="submit" class="btn btn-primary" name="login" value="<?php echo WORDING_LOGIN; ?>" />
+			    <label for="user_rememberme">Keep me logged in (for 2 weeks)</label>
+			    <input type="submit" class="btn btn-primary" name="login" value="Log In" />
 			</form>
 
-			<a href="register.php"><?php echo WORDING_REGISTER_NEW_ACCOUNT; ?></a>
-			<a href="password_reset.php"><?php echo WORDING_FORGOT_MY_PASSWORD; ?></a>
+			<a href="register.php">Register New Account</a>
+			<a href="password_reset.php">I forgot my password</a>
 
 		</div>
 	</div>
