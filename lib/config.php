@@ -13,17 +13,16 @@
 	if(!in_array($_SERVER['REMOTE_ADDR'], $localhost)){
 
     	$dotPHP = ""; // display .php extensions
-		$domain = "http://jetack.luke.sx"; // the actual domain this site runs off
+		$domain = "http://changethis/"; // the actual domain this site runs off
 
 		$config = array(
-			'admin_username' => 'admin', // username used to login to the admin area
-			'admin_password' => 'admin', // password used to login to the admin area
 
-			'db_host' 		=> 'localhost', // database host, usually localhost
-			'db_username' 	=> '', 			// database username
-			'db_password' 	=> '', 			// datebase password
-			'db_name' 		=> '', 			// database name
+			'db_host' 		=> '', 		// database host, usually localhost
+			'db_username' 	=> '', 		// database username
+			'db_password' 	=> '',		// datebase password
+			'db_name' 		=> '', 		// database name
 		);
+
 
 	} else {
 
@@ -31,8 +30,6 @@
 		$domain = "http://localhost/jetpack/"; // the actual domain this site runs off
 
 		$config = array(
-			'admin_username' => 'admin', // username used to login to the admin area
-			'admin_password' => 'admin', // password used to login to the admin area
 
 			'db_host' 		=> 'localhost', // database host, usually localhost
 			'db_username' 	=> '', 			// database username
