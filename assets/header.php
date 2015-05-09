@@ -10,7 +10,11 @@
 	require_once('classes/Login.php');
 	require_once('classes/SiteFunctions.php');
 	$login = new Login();
+<<<<<<< HEAD
 	$functions = new SiteFunctions();
+=======
+	$Functions = new SiteFunctions();
+>>>>>>> origin/master
 
 	date_default_timezone_set('UTC');
 
