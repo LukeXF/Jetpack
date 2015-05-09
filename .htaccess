@@ -1,14 +1,24 @@
+
 #
-#   Author :    Luke Brown
-#   License:    Contracted work - Written permission required from me for third party use.
-#   Created:    January 2015
-#   Contact:    me@luke.sx
+#	  Author :		Luke Brown
+#	  License:  	Contracted work - Written permission required from me for third party use.
+#	  Created: 		May 2015
+#	  URL    :		https://github.com/LukeXF/jetpack
+#	  Contact:		me@luke.sx
 #
 
 RewriteEngine On
 Options -Indexes
-ErrorDocument 403 404.php
-ErrorDocument 404 404.php
+
+ErrorDocument 403 http://jetpack/
+ErrorDocument 404 http://jetpack/
+
+# don't touch /assets URIs
+#RewriteRule ^assets/ - [L,NC]
+
+php_flag display_startup_errors on
+php_flag display_errors on
+
 
 RewriteEngine On
 RewriteBase /
@@ -16,21 +26,3 @@ RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{DOCUMENT_ROOT}/$1\.php -f
 RewriteRule ^([^/]+)/?$ $1.php [L]
-
-# sets the true header of a web page
-<FilesMatch "\.(?i:xml)$">
-      ForceType application/octet-stream
-      Header set Content-Disposition attachment
-</FilesMatch>
-
-# blocks the assets directory from been effected by rewrite
-RewriteRule ^assets/ - [L,NC]
-
-# Tells css that it's actually css
-AddType text/css .css 
-
-# RewriteRule ^shop/([^/]+)$ shop.php?product-type=$1
-
-
-php_flag  display_errors        on
-php_value error_reporting       2039

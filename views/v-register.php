@@ -14,9 +14,7 @@
         <div class="col-md-4 col-md-offset-4 contentbox">
 
             <!-- show registration form, but only if we didn't submit already -->
-            <?php if (!$registration->registration_successful && !$registration->verification_successful) { ?>
-            <form method="post" action="register.php" name="registerform">
-                <p>        
+             <p>        
                     <?php
                     // show potential errors / feedback (from login object)
                     if (isset($login)) {
@@ -49,29 +47,31 @@
                     }
                     ?>
                 </p>
-                <a class="brand animate" href="http://tickets.ashour.pw/"><?php echo $brand; ?></a>
+            <?php if (!$registration->registration_successful && !$registration->verification_successful) { ?>
+            <form method="post" action="register.php" name="registerform">
+                <a class="brand animate" href="<?php echo $domain; ?>"><?php echo $brand; ?></a>
                 <label for="user_name"></label>
-                <input id="user_name" type="text" pattern="[a-zA-Z0-9]{2,64}" name="user_name" required placeholder="<?php echo WORDING_REGISTRATION_USERNAME; ?>"/>
+                <input id="user_name" type="text" pattern="[a-zA-Z0-9]{2,64}" name="user_name" required placeholder="Enter your username"/>
 
                 <label for="user_email"></label>
-                <input id="user_email" type="email" name="user_email" required placeholder="<?php echo WORDING_REGISTRATION_EMAIL; ?>"/>
+                <input id="user_email" type="email" name="user_email" required placeholder="Enter your email"/>
 
                 <label for="user_password_new"></label>
-                <input id="user_password_new" type="password" name="user_password_new" pattern=".{6,}" required autocomplete="off" placeholder="<?php echo WORDING_REGISTRATION_PASSWORD; ?>"/>
+                <input id="user_password_new" type="password" name="user_password_new" pattern=".{6,}" required autocomplete="off" placeholder="Enter your password"/>
 
                 <label for="user_password_repeat"></label>
-                <input id="user_password_repeat" type="password" name="user_password_repeat" pattern=".{6,}" required autocomplete="off" placeholder="<?php echo WORDING_REGISTRATION_PASSWORD_REPEAT; ?>"/>
+                <input id="user_password_repeat" type="password" name="user_password_repeat" pattern=".{6,}" required autocomplete="off" placeholder="Repeat your password"/>
 
                 <img src="tools/showCaptcha.php" class="captcha" alt="captcha" />
 
                 <label></label>
-                <input type="text" name="captcha" required placeholder="<?php echo WORDING_REGISTRATION_CAPTCHA; ?>"/>
+                <input type="text" name="captcha" required placeholder="Fill out the captcha above"/>
 
-                <input type="submit" class="btn btn-primary" name="register" value="<?php echo WORDING_REGISTER; ?>" />
+                <input type="submit" class="btn btn-primary" name="register" value="Register" />
             </form>
             <?php } ?>
 
-                <a href="login"><?php echo WORDING_BACK_TO_LOGIN; ?></a>
+                <a href="login<?php echo $dotPHP; ?>">Back to account login</a>
 
         </div>
     </div>

@@ -1,4 +1,5 @@
 <?php
+
     include('assets/header.php');
     include('assets/navbar.php');
 

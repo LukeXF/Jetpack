@@ -2,26 +2,23 @@
 	if (version_compare(PHP_VERSION, '5.3.7', '<')) {
 	    exit('Sorry, this script does not run on a PHP version smaller than 5.3.7 !');
 	} else if (version_compare(PHP_VERSION, '5.5.0', '<')) {
-	    require_once('libraries/password_compatibility_library.php');
+	    require_once('lib/password_compatibility_library.php');
 	}
 
-	$brand = "JetPack";
-	$domain = "http://jetpack.luke.sx/";
-	// gravtar image size:
-	$size = '256';
-
-	require_once('config/config.php');
+	require_once('lib/config.php');
 	require_once('translations/en.php');
-	require_once('libraries/PHPMailer.php');
 	require_once('classes/Login.php');
+	require_once('classes/SiteFunctions.php');
 	$login = new Login();
+	$functions = new SiteFunctions();
 
 	date_default_timezone_set('UTC');
 
-
+	// gravtar settings
+	$default = "404";
+	$size = "256";
 	$grav_url = "http://www.gravatar.com/avatar/" . md5( strtolower( trim( $_SESSION['user_email'] ) ) ) . "?d=" . urlencode( $default ) . "&s=" . $size; 
 
-	$navlogin = "Welcome <b>" . $_SESSION['user_name'] . "</b>";
 
 	$navbar = array(
 		/*"Contact" =>   array(
@@ -38,6 +35,9 @@
 
 	);
 	if ($login->isUserLoggedIn() == true) {
+		// the login message
+		$navlogin = "Welcome <b>" . $_SESSION['user_name'] . "</b>";
+
 		$navbar2 = array(
 			"Follow Us" =>   array(
 				"active" => "",
@@ -59,13 +59,13 @@
 		$navbar2 = array(
 			"Register" =>   array(
 				"active" => "",
-				"url" => "register",
+				"url" => $domain . "register" . $dotPHP,
 				"submenu" => array()
 			),
 
 			"Login" => array(
 				"active" => "",
-				"url" => "login",          
+				"url" => $domain . "login" . $dotPHP,          
 				"submenu" => array()
 			)
 		);
@@ -79,7 +79,7 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="<?php echo $brand; ?>">
-		<meta name="author" content="me@luke.sx">
+		<meta name="author" content="Luke Brown, <?php echo $email; ?>">
 
 	    <title><?php echo $brand; ?></title>
 

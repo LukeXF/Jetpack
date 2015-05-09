@@ -1,181 +1,209 @@
 <?php
 
-/**
- * handles the user login/logout/session
- * @author Panique
- * @link http://www.php-login.net
- * @link https://github.com/panique/php-login-advanced/
- * @license http://opensource.org/licenses/MIT MIT License
- */
+// Handles the session, login and logout
 class Login
 {
-    /**
-     * @var object $db_connection The database connection
-     */
-    private $db_connection = null;
-    /**
-     * @var int $user_id The user's id
-     */
-    private $user_id = null;
-    /**
-     * @var string $user_name The user's name
-     */
-    private $user_name = "";
-    /**
-     * @var string $user_email The user's mail
-     */
-    private $user_email = "";
-    /**
-     * @var boolean $user_is_logged_in The user's login status
-     */
-    private $user_is_logged_in = false;
-    /**
-     * @var string $user_gravatar_image_url The user's gravatar profile pic url (or a default one)
-     */
-    public $user_gravatar_image_url = "";
-    /**
-     * @var string $user_gravatar_image_tag The user's gravatar profile pic url with <img ... /> around
-     */
-    public $user_gravatar_image_tag = "";
-    /**
-     * @var boolean $password_reset_link_is_valid Marker for view handling
-     */
-    private $password_reset_link_is_valid  = false;
-    /**
-     * @var boolean $password_reset_was_successful Marker for view handling
-     */
-    private $password_reset_was_successful = false;
-    /**
-     * @var array $errors Collection of error messages
-     */
-    public $errors = array();
-    /**
-     * @var array $messages Collection of success / neutral messages
-     */
-    public $messages = array();
 
-    /**
-     * the function "__construct()" automatically starts whenever an object of this class is created,
-     * you know, when you do "$login = new Login();"
-     */
+    // setup the predefined variables of this class
+    private $db_connection                  = null; // object $db_connection The database connection
+    private $user_id                        = null; // int $user_id The user's id    
+    private $user_name                      = ""; // string $user_name The user's name
+    private $user_email                     = ""; // string $user_email The user's mail
+    private $user_is_logged_in              = false; // boolean $user_is_logged_in The user's login status
+    private $query_edit_user_email          = ""; // string $user_email The user's mail
+    public $user_gravatar_image_url         = ""; // string $user_gravatar_image_url The user's gravatar profile pic url (or a default one)
+    public $user_gravatar_image_tag         = ""; // string $user_gravatar_image_tag The user's gravatar profile pic url with <img ... /> around
+    private $password_reset_link_is_valid   = false; // boolean $password_reset_link_is_valid Marker for view handling
+    private $password_reset_was_successful  = false; // boolean $password_reset_was_successful Marker for view handling
+    public $errors                          = array(); // array $errors Collection of error messages
+    public $messages                        = array(); // array $messages Collection of success / neutral messages
+
+    // the function "__construct()" automatically starts whenever an object of this class is created,
+    // this is done with "$login = new Login();"
     public function __construct()
     {
         // create/read session
         session_start();
 
-        // TODO: organize this stuff better and make the constructor very small
-        // TODO: unite Login and Registration classes ?
-
-        // check the possible login actions:
-        // 1. logout (happen when user clicks logout button)
-        // 2. login via session data (happens each time user opens a page on your php project AFTER he has successfully logged in via the login form)
-        // 3. login via cookie
-        // 4. login via post data, which means simply logging in via the login form. after the user has submit his login/password successfully, his
-        //    logged-in-status is written into his session data on the server. this is the typical behaviour of common login scripts.
-
-        // if user tried to log out
+        // if user tried to log out on any page
         if (isset($_GET["logout"])) {
+
+
+            // run the logout function
             $this->doLogout();
+
 
         // if user has an active session on the server
         } elseif (!empty($_SESSION['user_name']) && ($_SESSION['user_logged_in'] == 1)) {
+
+            // PLACE FUNCTIONS HERE FOR IF THE USER IS LOGGED IN
+
+            // run the logged in function
             $this->loginWithSessionData();
 
             // checking for form submit from editing screen
-            // user try to change his username
+            // user try to change their username
             if (isset($_POST["user_edit_submit_name"])) {
-                // function below uses use $_SESSION['user_id'] et $_SESSION['user_email']
+
+                // function below uses use $_SESSION['user_id'] and $_SESSION['user_email']
                 $this->editUserName($_POST['user_name']);
-            // user try to change his email
+
+
+            // user try to change their email
             } elseif (isset($_POST["user_edit_submit_email"])) {
-                // function below uses use $_SESSION['user_id'] et $_SESSION['user_email']
+
+                // function below uses use $_SESSION['user_id'] and $_SESSION['user_email']
                 $this->editUserEmail($_POST['user_email']);
-            // user try to change his password
+
+
+            // user try to change their password
             } elseif (isset($_POST["user_edit_submit_password"])) {
+
                 // function below uses $_SESSION['user_name'] and $_SESSION['user_id']
                 $this->editUserPassword($_POST['user_password_old'], $_POST['user_password_new'], $_POST['user_password_repeat']);
+            
+
             }
+
+
 
         // login with cookie
         } elseif (isset($_COOKIE['rememberme'])) {
+
+            // if there is a cookie present, hmmmm cookies
             $this->loginWithCookieData();
+
+
+
 
         // if user just submitted a login form
         } elseif (isset($_POST["login"])) {
+
+            // if they did not click the remember me button (do not remember them via cookie)
             if (!isset($_POST['user_rememberme'])) {
+
+                // set/override the post data to null
                 $_POST['user_rememberme'] = null;
             }
+
+            // log in the user function, at least we're going to try...
             $this->loginWithPostData($_POST['user_name'], $_POST['user_password'], $_POST['user_rememberme']);
+
+
         }
+
+
+
+
+
+
+
+
+        // PASSWORD RESETTING
 
         // checking if user requested a password reset mail
         if (isset($_POST["request_password_reset"]) && isset($_POST['user_name'])) {
+
+            // this function will generate a password reset token for the user if they're dumb enough to forget
             $this->setPasswordResetDatabaseTokenAndSendMail($_POST['user_name']);
+
+
         } elseif (isset($_GET["user_name"]) && isset($_GET["verification_code"])) {
+
+            // checks if the verification string in the account verification mail is valid and matches to the user.
+            // this also handles the expiring of the the verification links for the password reset 
             $this->checkIfEmailVerificationCodeIsValid($_GET["user_name"], $_GET["verification_code"]);
+
+
         } elseif (isset($_POST["submit_new_password"])) {
+
+            // so they have a valid reset link, now handle the new password with this function
             $this->editNewPassword($_POST['user_name'], $_POST['user_password_reset_hash'], $_POST['user_password_new'], $_POST['user_password_repeat']);
+
+
         }
+
+
+
+
+
+
+
+
 
         // get gravatar profile picture if user is logged in
         if ($this->isUserLoggedIn() == true) {
+
+            // generate the gravatar picture of the logged in user with this function
             $this->getGravatarImageUrl($this->user_email);
         }
+    // end of construct function... finally.
     }
 
-    /**
-     * Checks if database connection is opened. If not, then this method tries to open it.
-     * @return bool Success status of the database connecting process
-     */
+
+
+
+    // Checks if database connection is opened and open it if not (the start of all queries for registration)
     private function databaseConnection()
     {
-        // if connection already exists
+        // connection already opened
         if ($this->db_connection != null) {
+
+            // there is already a connection open so return true
             return true;
+
         } else {
+
+            // create a database connection, using the constants from config/config.php
             try {
-                // Generate a database connection, using the PDO connector
-                // @see http://net.tutsplus.com/tutorials/php/why-you-should-be-using-phps-pdo-for-database-access/
-                // Also important: We include the charset, as leaving it out seems to be a security issue:
-                // @see http://wiki.hashphp.org/PDO_Tutorial_for_MySQL_Developers#Connecting_to_MySQL says:
-                // "Adding the charset to the DSN is very important for security reasons,
-                // most examples you'll see around leave it out. MAKE SURE TO INCLUDE THE CHARSET!"
+
+                // create the start of PDO query
                 $this->db_connection = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
+
+                // return true now that the connection is opened
                 return true;
+
             } catch (PDOException $e) {
-                $this->errors[] = MESSAGE_DATABASE_ERROR . $e->getMessage();
+
+                // If an error is catched, database connection failed
+                $this->errors[] = MESSAGE_DATABASE_ERROR;
+
+                // return false :(
+                return false;
+
             }
         }
-        // default return
-        return false;
     }
 
-    /**
-     * Search into database for the user data of user_name specified as parameter
-     * @return user data as an object if existing user
-     * @return false if user_name is not found in the database
-     * TODO: @devplanete This returns two different types. Maybe this is valid, but it feels bad. We should rework this.
-     * TODO: @devplanete After some resarch I'm VERY sure that this is not good coding style! Please fix this.
-     */
+
+
+
+    // Search into database for the user data of user_name specified as parameter (selects all data)
     private function getUserData($user_name)
     {
         // if database connection opened
         if ($this->databaseConnection()) {
+
             // database query, getting all the info of the selected user
             $query_user = $this->db_connection->prepare('SELECT * FROM users WHERE user_name = :user_name');
+            // prepared statement for the username
             $query_user->bindValue(':user_name', $user_name, PDO::PARAM_STR);
+            // excute username
             $query_user->execute();
+
             // get result row (as an object)
             return $query_user->fetchObject();
+
         } else {
+
+            // if invalid username
             return false;
         }
     }
 
-    /**
-     * Logs in with S_SESSION data.
-     * Technically we are already logged in at that point of time, as the $_SESSION values already exist.
-     */
+
+
+    // login with $_SESSION data. Which overrides the current session (this puts session data into session)
     private function loginWithSessionData()
     {
         $this->user_name = $_SESSION['user_name'];
@@ -187,30 +215,47 @@ class Login
         $this->user_is_logged_in = true;
     }
 
-    /**
-     * Logs in via the Cookie
-     * @return bool success state of cookie login
-     */
+
+
+
+    // login with a cookie, yum! (user has been on the site before)
     private function loginWithCookieData()
     {
+
+        // if there is a cookie
         if (isset($_COOKIE['rememberme'])) {
+
+
             // extract data from the cookie
             list ($user_id, $token, $hash) = explode(':', $_COOKIE['rememberme']);
-            // check cookie hash validity
+
+            // check cookie hash validity, using sha256 for this
+            // if the hash is changed then all signed in users will have their cookies invalidated
+            // could cause issues with a mismatch
             if ($hash == hash('sha256', $user_id . ':' . $token . COOKIE_SECRET_KEY) && !empty($token)) {
+
                 // cookie looks good, try to select corresponding user
                 if ($this->databaseConnection()) {
+
                     // get real token from database (and all other data)
                     $sth = $this->db_connection->prepare("SELECT user_id, user_name, user_email FROM users WHERE user_id = :user_id
                                                       AND user_rememberme_token = :user_rememberme_token AND user_rememberme_token IS NOT NULL");
+                    // prepared statement for the user id from the cookie
                     $sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+                    // prepared token that compared the remember me token to the database
                     $sth->bindValue(':user_rememberme_token', $token, PDO::PARAM_STR);
+                    // run the query and return the user's data
                     $sth->execute();
+
+
                     // get result row (as an object)
                     $result_row = $sth->fetchObject();
 
+                    // if there is a user_id returned
                     if (isset($result_row->user_id)) {
-                        // write user data into PHP SESSION [a file on your server]
+
+                        // write user data into PHP SESSION [a file on the server]
+                        // saving to session, finally!
                         $_SESSION['user_id'] = $result_row->user_id;
                         $_SESSION['user_name'] = $result_row->user_name;
                         $_SESSION['user_email'] = $result_row->user_email;
@@ -218,35 +263,43 @@ class Login
 
                         // declare user id, set the login status to true
                         $this->user_id = $result_row->user_id;
+                        // result row, set to the username for other functions
                         $this->user_name = $result_row->user_name;
+                        // result row, set to the email address for other functions
                         $this->user_email = $result_row->user_email;
+                        // result row, display the logged in status
                         $this->user_is_logged_in = true;
 
-                        // Cookie token usable only once
+                        // Cookie token usable only once (regenerate it with this function)
                         $this->newRememberMeCookie();
+
+                        // return to the function that te login was successful
                         return true;
                     }
                 }
             }
+
             // A cookie has been used but is not valid... we delete it
             $this->deleteRememberMeCookie();
-            $this->errors[] = MESSAGE_COOKIE_INVALID;
+
+            // display errors
+            $this->errors[] = "Invalid cookie";
         }
         return false;
     }
 
-    /**
-     * Logs in with the data provided in $_POST, coming from the login form
-     * @param $user_name
-     * @param $user_password
-     * @param $user_rememberme
-     */
+
+
+
+    // Logs in with the data provided in $_POST, coming from the login form
     private function loginWithPostData($user_name, $user_password, $user_rememberme)
     {
         if (empty($user_name)) {
-            $this->errors[] = MESSAGE_USERNAME_EMPTY;
+            // if the username is empty
+            $this->errors[] = "Username field was empty";
         } else if (empty($user_password)) {
-            $this->errors[] = MESSAGE_PASSWORD_EMPTY;
+            // if the password is empty
+            $this->errors[] = "Password field was empty";
 
         // if POST data (from login form) contains non-empty user_name and non-empty user_password
         } else {
@@ -260,7 +313,10 @@ class Login
             } else if ($this->databaseConnection()) {
                 // database query, getting all the info of the selected user
                 $query_user = $this->db_connection->prepare('SELECT * FROM users WHERE user_email = :user_email');
+                // prepared statement for the user's email address
+                // login via email address
                 $query_user->bindValue(':user_email', trim($user_name), PDO::PARAM_STR);
+                // excute the query 
                 $query_user->execute();
                 // get result row (as an object)
                 $result_row = $query_user->fetchObject();
@@ -268,196 +324,277 @@ class Login
 
             // if this user not exists
             if (! isset($result_row->user_id)) {
-                // was MESSAGE_USER_DOES_NOT_EXIST before, but has changed to MESSAGE_LOGIN_FAILED
-                // to prevent potential attackers showing if the user exists
-                $this->errors[] = MESSAGE_LOGIN_FAILED;
+               
+                // this error message does not return any data relating to if the account is an account
+                // therefor it stops hackers and display the login error. 
+                $this->errors[] = "Login failed.";
+
+
             } else if (($result_row->user_failed_logins >= 3) && ($result_row->user_last_failed_login > (time() - 30))) {
-                $this->errors[] = MESSAGE_PASSWORD_WRONG_3_TIMES;
+                // if the password is entered in wrong three times in the last 30 seconds then tell them to slow down
+                $this->errors[] = "You have entered an incorrect password 3 or more times already. Please wait 30 seconds to try again.";
+
+
             // using PHP 5.5's password_verify() function to check if the provided passwords fits to the hash of that user's password
             } else if (! password_verify($user_password, $result_row->user_password_hash)) {
-                // increment the failed login counter for that user
+
+                // increment the failed login counter for that user (to watch out for stupid people and brute force attacks)
                 $sth = $this->db_connection->prepare('UPDATE users '
                         . 'SET user_failed_logins = user_failed_logins+1, user_last_failed_login = :user_last_failed_login '
                         . 'WHERE user_name = :user_name OR user_email = :user_name');
+
+                // excute the failed attempts query into the database
                 $sth->execute(array(':user_name' => $user_name, ':user_last_failed_login' => time()));
 
-                $this->errors[] = MESSAGE_PASSWORD_WRONG;
+                // wrong password error (display after the user's failed login attempts are updated)
+                $this->errors[] = "Wrong password. Try again.";
+
+
             // has the user activated their account with the verification email
             } else if ($result_row->user_active != 1) {
-                $this->errors[] = MESSAGE_ACCOUNT_NOT_ACTIVATED;
+
+                // they need to stop logging in and start verifying their address
+                $this->errors[] = "Your account is not activated yet. Please click on the confirm link in the mail.";
+
+
             } else {
+
+                // now we have a successful login at this point
+
                 // write user data into PHP SESSION [a file on your server]
                 $_SESSION['user_id'] = $result_row->user_id;
                 $_SESSION['user_name'] = $result_row->user_name;
                 $_SESSION['user_email'] = $result_row->user_email;
                 $_SESSION['user_logged_in'] = 1;
 
-                // declare user id, set the login status to true
+                // declare user id, set the login status to true (this->value is used as result_row in other functions)
                 $this->user_id = $result_row->user_id;
                 $this->user_name = $result_row->user_name;
                 $this->user_email = $result_row->user_email;
                 $this->user_is_logged_in = true;
 
-                // reset the failed login counter for that user
+                // reset the failed login counter for that user now that they have logged in
                 $sth = $this->db_connection->prepare('UPDATE users '
                         . 'SET user_failed_logins = 0, user_last_failed_login = NULL '
                         . 'WHERE user_id = :user_id AND user_failed_logins != 0');
+                // excute the code where the user is successful
                 $sth->execute(array(':user_id' => $result_row->user_id));
 
                 // if user has check the "remember me" checkbox, then generate token and write cookie
                 if (isset($user_rememberme)) {
+
+                    // when logging in run the generate cookie function
                     $this->newRememberMeCookie();
+
+
                 } else {
+
                     // Reset remember-me token
                     $this->deleteRememberMeCookie();
+
+
                 }
 
-                // OPTIONAL: recalculate the user's password hash
-                // DELETE this if-block if you like, it only exists to recalculate users's hashes when you provide a cost factor,
-                // by default the script will use a cost factor of 10 and never change it.
-                // check if the have defined a cost factor in config/hashing.php
+                // Will regenerate the password hash if the hash factor is changed in the config
                 if (defined('HASH_COST_FACTOR')) {
+
                     // check if the hash needs to be rehashed
                     if (password_needs_rehash($result_row->user_password_hash, PASSWORD_DEFAULT, array('cost' => HASH_COST_FACTOR))) {
 
                         // calculate new hash with new cost factor
                         $user_password_hash = password_hash($user_password, PASSWORD_DEFAULT, array('cost' => HASH_COST_FACTOR));
 
-                        // TODO: this should be put into another method !?
+                        // insert the new hash into the database with prepared statements to stop SQL injections
                         $query_update = $this->db_connection->prepare('UPDATE users SET user_password_hash = :user_password_hash WHERE user_id = :user_id');
                         $query_update->bindValue(':user_password_hash', $user_password_hash, PDO::PARAM_STR);
                         $query_update->bindValue(':user_id', $result_row->user_id, PDO::PARAM_INT);
+                        // excute the querty to update the new passwrod hash
                         $query_update->execute();
 
                         if ($query_update->rowCount() == 0) {
-                            // writing new hash was successful. you should now output this to the user ;)
+
+                            // inform the user that their password has be better protected (not really relavant to the user)
+                            $this->messages['We\'ve updated your password encryption to make it more safer for you.'];
                         } else {
-                            // writing new hash was NOT successful. you should now output this to the user ;)
+                            
+                            // if there was an error generating the hash
+                            $this->messages['There was an issue with your password hash, please contact support.'];
                         }
                     }
                 }
-            }
+
+
+            // end of successfull statement
+            } 
+          // end of valid user part of login function  
         }
+        // end of standard login function
     }
 
-    /**
-     * Create all data needed for remember me cookie connection on client and server side
-     */
+
+
+    
+    // Create all data needed for remember me cookie connection on client and server side
     private function newRememberMeCookie()
     {
         // if database connection opened
         if ($this->databaseConnection()) {
             // generate 64 char random string and store it in current user data
             $random_token_string = hash('sha256', mt_rand());
+
+            // query to update the newly generated cookie in the database
             $sth = $this->db_connection->prepare("UPDATE users SET user_rememberme_token = :user_rememberme_token WHERE user_id = :user_id");
+            // excute the query to update the cookie on a server side
             $sth->execute(array(':user_rememberme_token' => $random_token_string, ':user_id' => $_SESSION['user_id']));
 
-            // generate cookie string that consists of userid, randomstring and combined hash of both
+            // generate cookie string that consists of userid, random string and combined hash of both
             $cookie_string_first_part = $_SESSION['user_id'] . ':' . $random_token_string;
+            // add the unqiue cookie data for that user and the site cookie key (defined in config file) together
             $cookie_string_hash = hash('sha256', $cookie_string_first_part . COOKIE_SECRET_KEY);
+            // add the unique cookie data to the already created unique data and site key
             $cookie_string = $cookie_string_first_part . ':' . $cookie_string_hash;
 
-            // set cookie
+            // set cookie so that it is now updated (or set) on the client side
             setcookie('rememberme', $cookie_string, time() + COOKIE_RUNTIME, "/", COOKIE_DOMAIN);
         }
     }
 
-    /**
-     * Delete all data needed for remember me cookie connection on client and server side
-     */
+
+
+
+    // Delete all data needed for remember me cookie connection on client and server side
     private function deleteRememberMeCookie()
     {
         // if database connection opened
         if ($this->databaseConnection()) {
-            // Reset rememberme token
+
+            // reset rememberme token
             $sth = $this->db_connection->prepare("UPDATE users SET user_rememberme_token = NULL WHERE user_id = :user_id");
+            // excute the query to delete the cookie that is stored in the database
             $sth->execute(array(':user_id' => $_SESSION['user_id']));
+
+
         }
 
-        // set the rememberme-cookie to ten years ago (3600sec * 365 days * 10).
-        // that's obivously the best practice to kill a cookie via php
-        // @see http://stackoverflow.com/a/686166/1114320
+        // set the rememberme-cookie to ten years ago so that it won't be valid at all
+        // becuase that's the best way to do it when goolging it although I think
+        // there should be a function to set all site cookies to null :/
         setcookie('rememberme', false, time() - (3600 * 3650), '/', COOKIE_DOMAIN);
     }
 
-    /**
-     * Perform the logout, resetting the session
-     */
+
+
+
+
+    // Perform the logout, resetting the session DESTORY DESTROY DESTROY RAAAAWWWWRRRR!!!
     public function doLogout()
     {
+        // run the delete function of the cookie
         $this->deleteRememberMeCookie();
 
+        // set the session to a blank array
         $_SESSION = array();
+
+        // just because we're over protective, I'm going to destroy the emptied session muwhaha
         session_destroy();
 
+        // set the user logged status to false, effective signing them out of all pages
         $this->user_is_logged_in = false;
-        $this->messages[] = MESSAGE_LOGGED_OUT;
+
+        // send a lovely message telling them they have now been logged out
+        $this->messages[] = "You have been logged out.";
     }
 
-    /**
-     * Simply return the current state of the user's login
-     * @return bool user's login status
-     */
+
+
+
+    // Simply return the current state of the user's login, check if the user is logged in
     public function isUserLoggedIn()
     {
+        // yep, that's it
         return $this->user_is_logged_in;
     }
 
-    /**
-     * Edit the user's name, provided in the editing form
-     */
+
+
+
+    // Edit the user's name, provided in the editing form
     public function editUserName($user_name)
     {
-        // prevent database flooding
+        // prevent database flooding, shorts the name when they go to edit it (on the account page when logged in)
         $user_name = substr(trim($user_name), 0, 64);
 
+        // if the user is that special they decided to set their own name again, then display an error
         if (!empty($user_name) && $user_name == $_SESSION['user_name']) {
-            $this->errors[] = MESSAGE_USERNAME_SAME_LIKE_OLD_ONE;
+            $this->errors[] = "Sorry, that username is the same as your current one. Please choose another one.";
 
         // username cannot be empty and must be azAZ09 and 2-64 characters
-        // TODO: maybe this pattern should also be implemented in Registration.php (or other way round)
         } elseif (empty($user_name) || !preg_match("/^(?=.{2,64}$)[a-zA-Z][a-zA-Z0-9]*(?: [a-zA-Z0-9]+)*$/", $user_name)) {
-            $this->errors[] = MESSAGE_USERNAME_INVALID;
+
+            // return an error that the username is invalid
+            $this->errors[] = "Username does not fit the name scheme: only a-Z and numbers are allowed, 2 to 64 characters";
 
         } else {
-            // check if new username already exists
+
+            // check if new username already exists 
             $result_row = $this->getUserData($user_name);
 
+            // if the user name is already in use
             if (isset($result_row->user_id)) {
-                $this->errors[] = MESSAGE_USERNAME_EXISTS;
+
+                // the error message to display the user is already taken
+                $this->errors[] = "Sorry, that username is already taken. Please choose another one.";
+
+
             } else {
+
                 // write user's new data into database
                 $query_edit_user_name = $this->db_connection->prepare('UPDATE users SET user_name = :user_name WHERE user_id = :user_id');
                 $query_edit_user_name->bindValue(':user_name', $user_name, PDO::PARAM_STR);
                 $query_edit_user_name->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+                // execute the query to edit the user's name
                 $query_edit_user_name->execute();
 
+                // if the user name successfull update 
                 if ($query_edit_user_name->rowCount()) {
+
+                    // set the new username into session
                     $_SESSION['user_name'] = $user_name;
-                    $this->messages[] = MESSAGE_USERNAME_CHANGED_SUCCESSFULLY . $user_name;
+
+                    // message to say the username has been updated
+                    $this->messages[] = "Your username has been changed successfully. New username is " . $user_name;
                 } else {
-                    $this->errors[] = MESSAGE_USERNAME_CHANGE_FAILED;
+
+                    // message if we have a failure to change the address
+                    $this->errors[] = "Sorry, your chosen username renaming failed";
                 }
             }
         }
     }
 
-    /**
-     * Edit the user's email, provided in the editing form
-     */
+
+
+
+    // Edit the user's email, provided in the editing form
     public function editUserEmail($user_email)
     {
-        // prevent database flooding
+        // prevent database flooding, shorts the name when they go to edit it (on the account page when logged in)
         $user_email = substr(trim($user_email), 0, 64);
 
+        // if they email is the same as before
         if (!empty($user_email) && $user_email == $_SESSION["user_email"]) {
-            $this->errors[] = MESSAGE_EMAIL_SAME_LIKE_OLD_ONE;
+
+            // output error
+            $this->errors[] = "Sorry, that email address is the same as your current one. Please choose another one.";
+
         // user mail cannot be empty and must be in email format
         } elseif (empty($user_email) || !filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
-            $this->errors[] = MESSAGE_EMAIL_INVALID;
+
+            // most modern browers should even prevent the username from the email
+            $this->errors[] = "Your email address is not in a valid email format";
 
         } else if ($this->databaseConnection()) {
-            // check if new email already exists
+            // check if new email already exists 
             $query_user = $this->db_connection->prepare('SELECT * FROM users WHERE user_email = :user_email');
             $query_user->bindValue(':user_email', $user_email, PDO::PARAM_STR);
             $query_user->execute();
@@ -466,90 +603,128 @@ class Login
 
             // if this email exists
             if (isset($result_row->user_id)) {
-                $this->errors[] = MESSAGE_EMAIL_ALREADY_EXISTS;
+
+                // send error to explain the email address is already registered
+                $this->errors[] = "This email address is already registered. Please use the \"I forgot my password\" page if you don't remember it.";
+
+
             } else {
+
                 // write users new data into database
                 $query_edit_user_email = $this->db_connection->prepare('UPDATE users SET user_email = :user_email WHERE user_id = :user_id');
                 $query_edit_user_email->bindValue(':user_email', $user_email, PDO::PARAM_STR);
                 $query_edit_user_email->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+                // execute the query to update the new email address over the old one
                 $query_edit_user_email->execute();
 
+                // if thee is a returned user
                 if ($query_edit_user_email->rowCount()) {
+
+                    // override the session email address to replace the old one
                     $_SESSION['user_email'] = $user_email;
-                    $this->messages[] = MESSAGE_EMAIL_CHANGED_SUCCESSFULLY . $user_email;
+                    // tell the user the message has been updated
+                    $this->messages[] = "Your email address has been changed successfully. New email address is " . $user_email;
+
+
                 } else {
-                    $this->errors[] = MESSAGE_EMAIL_CHANGE_FAILED;
+
+                    // if there was no returned rows then display the error
+                    $this->errors[] = "Sorry, your email changing failed.";
+
+
                 }
             }
         }
     }
 
-    /**
-     * Edit the user's password, provided in the editing form
-     */
+
+
+
+    // Edit the user's password, provided in the editing form
     public function editUserPassword($user_password_old, $user_password_new, $user_password_repeat)
     {
+        // if the any of the variables are empty
         if (empty($user_password_new) || empty($user_password_repeat) || empty($user_password_old)) {
-            $this->errors[] = MESSAGE_PASSWORD_EMPTY;
+
+            // error message for empty password field(s)
+            $this->errors[] = "Password field was empty";
+
+
         // is the repeat password identical to password
         } elseif ($user_password_new !== $user_password_repeat) {
-            $this->errors[] = MESSAGE_PASSWORD_BAD_CONFIRM;
+
+            // passwords are the same error message
+            $this->errors[] = "Password and password repeat are not the same";
+
         // password need to have a minimum length of 6 characters
         } elseif (strlen($user_password_new) < 6) {
-            $this->errors[] = MESSAGE_PASSWORD_TOO_SHORT;
+
+            // if the password is shorter than six characters
+            $this->errors[] = "Password has a minimum length of 6 characters";
 
         // all the above tests are ok
         } else {
+
             // database query, getting hash of currently logged in user (to check with just provided password)
             $result_row = $this->getUserData($_SESSION['user_name']);
 
-            // if this user exists
+            // if this password hash exists for the user logged in
             if (isset($result_row->user_password_hash)) {
 
                 // using PHP 5.5's password_verify() function to check if the provided passwords fits to the hash of that user's password
                 if (password_verify($user_password_old, $result_row->user_password_hash)) {
 
-                    // now it gets a little bit crazy: check if we have a constant HASH_COST_FACTOR defined (in config/hashing.php),
-                    // if so: put the value into $hash_cost_factor, if not, make $hash_cost_factor = null
+                    // set hash to variable, if not hash assigned in the config then set hash to null
                     $hash_cost_factor = (defined('HASH_COST_FACTOR') ? HASH_COST_FACTOR : null);
 
-                    // crypt the user's password with the PHP 5.5's password_hash() function, results in a 60 character hash string
-                    // the PASSWORD_DEFAULT constant is defined by the PHP 5.5, or if you are using PHP 5.3/5.4, by the password hashing
-                    // compatibility library. the third parameter looks a little bit shitty, but that's how those PHP 5.5 functions
-                    // want the parameter: as an array with, currently only used with 'cost' => XX.
+                    // hash and salt the users password with the password hash function
                     $user_password_hash = password_hash($user_password_new, PASSWORD_DEFAULT, array('cost' => $hash_cost_factor));
 
                     // write users new hash into database
                     $query_update = $this->db_connection->prepare('UPDATE users SET user_password_hash = :user_password_hash WHERE user_id = :user_id');
                     $query_update->bindValue(':user_password_hash', $user_password_hash, PDO::PARAM_STR);
                     $query_update->bindValue(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+                    // exectute password update query
                     $query_update->execute();
 
                     // check if exactly one row was successfully changed:
                     if ($query_update->rowCount()) {
-                        $this->messages[] = MESSAGE_PASSWORD_CHANGED_SUCCESSFULLY;
+
+                        // output that password was changed if the MySQL query 
+                        $this->messages[] = "Password successfully changed!";
+
+
                     } else {
-                        $this->errors[] = MESSAGE_PASSWORD_CHANGE_FAILED;
+
+                        // if the MySQL query returns nothing then fail 
+                        $this->errors[] = "Sorry, your password changing failed.";
                     }
                 } else {
-                    $this->errors[] = MESSAGE_OLD_PASSWORD_WRONG;
+
+                    // if the current password was entered incorrectly
+                    $this->errors[] = "Your OLD password was wrong.";
                 }
             } else {
-                $this->errors[] = MESSAGE_USER_DOES_NOT_EXIST;
+
+                // if the password hash is invalid
+                $this->errors[] = "This user does not exist";
             }
         }
     }
 
-    /**
-     * Sets a random token into the database (that will verify the user when he/she comes back via the link
-     * in the email) and sends the according email.
-     */
+
+
+
+    // Sets a random token into the database (that will verify the user when he/she comes back via the link
+    // in the email) and sends the according email.
     public function setPasswordResetDatabaseTokenAndSendMail($user_name)
     {
+        // stop database flooding by timing the usenrame
         $user_name = trim($user_name);
 
+        // if the username is empty when trying to reset the email
         if (empty($user_name)) {
-            $this->errors[] = MESSAGE_USERNAME_EMPTY;
+            $this->errors[] = "Username field was empty";
 
         } else {
             // generate timestamp (to see when exactly the user (or an attacker) requested the password reset mail)
@@ -563,13 +738,17 @@ class Login
             // if this user exists
             if (isset($result_row->user_id)) {
 
-                // database query:
+                // database query to update the password reset hash before sending the email link
                 $query_update = $this->db_connection->prepare('UPDATE users SET user_password_reset_hash = :user_password_reset_hash,
                                                                user_password_reset_timestamp = :user_password_reset_timestamp
                                                                WHERE user_name = :user_name');
+                // prepared statement of the password reset hash
                 $query_update->bindValue(':user_password_reset_hash', $user_password_reset_hash, PDO::PARAM_STR);
+                // prepared statement of the timestamp to allow expiring of links
                 $query_update->bindValue(':user_password_reset_timestamp', $temporary_timestamp, PDO::PARAM_INT);
+                // prepared statement of the username
                 $query_update->bindValue(':user_name', $user_name, PDO::PARAM_STR);
+                // excute the query to update the password reset hash
                 $query_update->execute();
 
                 // check if exactly one row was successfully changed:
@@ -578,165 +757,227 @@ class Login
                     $this->sendPasswordResetMail($user_name, $result_row->user_email, $user_password_reset_hash);
                     return true;
                 } else {
-                    $this->errors[] = MESSAGE_DATABASE_ERROR;
+                    // if there is no return data
+                    $this->errors[] = "Database connection problem.";
                 }
             } else {
-                $this->errors[] = MESSAGE_USER_DOES_NOT_EXIST;
+                // if the user id is not valid
+                $this->errors[] = "This user does not exist";
             }
         }
         // return false (this method only returns true when the database entry has been set successfully)
         return false;
     }
 
-    /**
-     * Sends the password-reset-email.
-     */
+
+
+
+    // sends an email to the provided email address to reset password, returns if the email could be sent or not (boolean)
     public function sendPasswordResetMail($user_name, $user_email, $user_password_reset_hash)
     {
-        $mail = new PHPMailer;
 
-        // please look into the config/config.php for much more info on how to use this!
-        // use SMTP or use mail()
-        if (EMAIL_USE_SMTP) {
-            // Set mailer to use SMTP
-            $mail->IsSMTP();
-            //useful for debugging, shows full SMTP errors
-            //$mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
-            // Enable SMTP authentication
-            $mail->SMTPAuth = EMAIL_SMTP_AUTH;
-            // Enable encryption, usually SSL/TLS
-            if (defined(EMAIL_SMTP_ENCRYPTION)) {
-                $mail->SMTPSecure = EMAIL_SMTP_ENCRYPTION;
-            }
-            // Specify host server
-            $mail->Host = EMAIL_SMTP_HOST;
-            $mail->Username = EMAIL_SMTP_USERNAME;
-            $mail->Password = EMAIL_SMTP_PASSWORD;
-            $mail->Port = EMAIL_SMTP_PORT;
-        } else {
-            $mail->IsMail();
-        }
 
-        $mail->From = EMAIL_PASSWORDRESET_FROM;
-        $mail->FromName = EMAIL_PASSWORDRESET_FROM_NAME;
-        $mail->AddAddress($user_email);
-        $mail->Subject = EMAIL_PASSWORDRESET_SUBJECT;
+        // include the Mandrill PHP Wrapper
+        require 'lib/mandrill/src/Mandrill.php';
 
-        $link    = EMAIL_PASSWORDRESET_URL.'?user_name='.urlencode($user_name).'&verification_code='.urlencode($user_password_reset_hash);
-        $mail->Body = EMAIL_PASSWORDRESET_CONTENT . ' ' . $link;
 
-        if(!$mail->Send()) {
-            $this->errors[] = MESSAGE_PASSWORD_RESET_MAIL_FAILED . $mail->ErrorInfo;
-            return false;
-        } else {
-            $this->messages[] = MESSAGE_PASSWORD_RESET_MAIL_SUCCESSFULLY_SENT;
+        // start a new instants of the Mandrill class
+        $mandrill = new Mandrill($GLOBALS['mandrillAPIKey']);
+
+
+        // generate the message that is sent to the user upon sending an email
+        $message = array(
+
+            // the subject will be sent as the email subject.
+            'subject' => 'Reset Password on ' . $GLOBALS['brand'] . ' for ' . $user_name,
+
+            // this variable is stored in the config file
+            // for this to work over SMTP you must allow Mandrill's confirmation txt record
+            // on your DNS for your domain that you are using
+            'from_email' => $GLOBALS['email'],
+
+            // the visible name that is displayed as the sender on things like Google Mail
+            'from_name' => 'The ' . $GLOBALS['brand'] . ' Team',
+
+            // array of where to send the email to, multiple arrays for multiple people
+            'to' => array(
+                array('email' => $user_email, 'name' => $user_name)
+            )
+
+        );
+
+
+        // the name of the template stored on the Mandrill website (defined in the config)
+        $template_name = $GLOBALS['mandrillTemplateName'];
+
+
+        // generates the link for the verfication using URL enconde to support all email types
+        $link = $GLOBALS['domain'] . 'register' . $GLOBALS['dotPHP'] . '?user_name=' . urlencode($user_name) . '&verification_code=' . urlencode($user_password_reset_hash);
+
+
+
+        // generate the body of the email, the email supports HTML
+        $template_content = array(
+            array(
+                'name' => 'main',
+                'content' => '<h2>Welcome back to ' . $GLOBALS['brand'] . ' ' .  $user_name . '</h2> <p> You have requested a password reset via our website, if this was not you then please ignore this email or contact our support if you believe this an issue.</p>'),
+            array(
+                'name' => 'footer',
+                'content' => '<p>Simply click <a href=\'' . $link .' \'>here</a> to join the community.</p>')
+
+        );
+
+        // the returned array sent from Mandrill's servers, print this to debug
+        $returned_message = $mandrill->messages->sendTemplate($template_name, $template_content, $message);
+
+
+        // the final part of this function, if the Mandril repsonse is good, then return true
+        if($returned_message[0]['status'] == "sent") {
+
+            // everything worked, so return true
             return true;
+
+
+        } else {
+
+            // Mandrill returns an error message, so tell the user that it was unsuccessful and return false
+            $this->errors[] = "The reset password mail NOT successfully sent! Error: " . $mail->ErrorInfo;
+            return false;
         }
     }
 
-    /**
-     * Checks if the verification string in the account verification mail is valid and matches to the user.
-     */
+
+
+
+
+    // Checks if the verification string in the account verification mail is valid and matches to the user.
     public function checkIfEmailVerificationCodeIsValid($user_name, $verification_code)
     {
+        // prevent database flooding - trim the username
         $user_name = trim($user_name);
 
+        // if the username is empty or the code is empty
         if (empty($user_name) || empty($verification_code)) {
-            $this->errors[] = MESSAGE_LINK_PARAMETER_EMPTY;
+
+            // empty message error
+            $this->errors[] = "Empty link parameter data.";
+
+
         } else {
+
             // database query, getting all the info of the selected user
             $result_row = $this->getUserData($user_name);
 
             // if this user exists and have the same hash in database
             if (isset($result_row->user_id) && $result_row->user_password_reset_hash == $verification_code) {
 
+                // calculate an hour ago in seconds
                 $timestamp_one_hour_ago = time() - 3600; // 3600 seconds are 1 hour
 
+                // if the time is within an hour ago
                 if ($result_row->user_password_reset_timestamp > $timestamp_one_hour_ago) {
+
                     // set the marker to true, making it possible to show the password reset edit form view
                     $this->password_reset_link_is_valid = true;
+
                 } else {
-                    $this->errors[] = MESSAGE_RESET_LINK_HAS_EXPIRED;
+
+                    // the link has expired because it has been longer than an hour, return error
+                    $this->errors[] = "Your reset link has expired. Please use the reset link within one hour.";
                 }
             } else {
-                $this->errors[] = MESSAGE_USER_DOES_NOT_EXIST;
+
+                //the user or link is invalid
+                $this->errors[] = "This user does not exist";
+
             }
         }
     }
 
-    /**
-     * Checks and writes the new password.
-     */
+    // Checks and writes the new password as the password has been reset
     public function editNewPassword($user_name, $user_password_reset_hash, $user_password_new, $user_password_repeat)
     {
-        // TODO: timestamp!
+        // trip the username to prevent database flooding
         $user_name = trim($user_name);
 
+        // if anyhing is empty when changing the password
         if (empty($user_name) || empty($user_password_reset_hash) || empty($user_password_new) || empty($user_password_repeat)) {
-            $this->errors[] = MESSAGE_PASSWORD_EMPTY;
+
+            // error message
+            $this->errors[] = "Password field was empty";
+
+
         // is the repeat password identical to password
         } else if ($user_password_new !== $user_password_repeat) {
-            $this->errors[] = MESSAGE_PASSWORD_BAD_CONFIRM;
+
+            // passwords do not match error
+            $this->errors[] = "The passwords do not match";
+
+
         // password need to have a minimum length of 6 characters
         } else if (strlen($user_password_new) < 6) {
-            $this->errors[] = MESSAGE_PASSWORD_TOO_SHORT;
+
+            // the password is too short error
+            $this->errors[] = "Password has a minimum length of 6 characters";
+
+
         // if database connection opened
         } else if ($this->databaseConnection()) {
-            // now it gets a little bit crazy: check if we have a constant HASH_COST_FACTOR defined (in config/hashing.php),
-            // if so: put the value into $hash_cost_factor, if not, make $hash_cost_factor = null
+            // get the hash cost factor from the config file, or set to null if it doesn't exist there.
             $hash_cost_factor = (defined('HASH_COST_FACTOR') ? HASH_COST_FACTOR : null);
 
             // crypt the user's password with the PHP 5.5's password_hash() function, results in a 60 character hash string
-            // the PASSWORD_DEFAULT constant is defined by the PHP 5.5, or if you are using PHP 5.3/5.4, by the password hashing
-            // compatibility library. the third parameter looks a little bit shitty, but that's how those PHP 5.5 functions
-            // want the parameter: as an array with, currently only used with 'cost' => XX.
             $user_password_hash = password_hash($user_password_new, PASSWORD_DEFAULT, array('cost' => $hash_cost_factor));
 
-            // write users new hash into database
+            // write users new hash into database along with the setting the reset hash to null
             $query_update = $this->db_connection->prepare('UPDATE users SET user_password_hash = :user_password_hash,
                                                            user_password_reset_hash = NULL, user_password_reset_timestamp = NULL
                                                            WHERE user_name = :user_name AND user_password_reset_hash = :user_password_reset_hash');
+            // prepared statement for the password hash
             $query_update->bindValue(':user_password_hash', $user_password_hash, PDO::PARAM_STR);
+            // prepared statement for the reset password hash (this is only used to find the password hash so it can be set to null)
             $query_update->bindValue(':user_password_reset_hash', $user_password_reset_hash, PDO::PARAM_STR);
+            // prepared statement for the username to confirm that the user that is been edited is the correct one
             $query_update->bindValue(':user_name', $user_name, PDO::PARAM_STR);
+            // excute out the password hash update
             $query_update->execute();
 
             // check if exactly one row was successfully changed:
             if ($query_update->rowCount() == 1) {
+
+                // return the password reset check to true
                 $this->password_reset_was_successful = true;
-                $this->messages[] = MESSAGE_PASSWORD_CHANGED_SUCCESSFULLY;
+
+                // inform the user everything worked and the password has been updated
+                $this->messages[] = "Password successfully changed!";
+
             } else {
-                $this->errors[] = MESSAGE_PASSWORD_CHANGE_FAILED;
+
+                // if there was an error
+                $this->errors[] = "Sorry, your password changing failed.";
+
             }
         }
     }
 
-    /**
-     * Gets the success state of the password-reset-link-validation.
-     * TODO: should be more like getPasswordResetLinkValidationStatus
-     * @return boolean
-     */
+    // Gets the success state of the password-reset-link-validation.
     public function passwordResetLinkIsValid()
     {
+        // used in the verification check function
         return $this->password_reset_link_is_valid;
     }
 
-    /**
-     * Gets the success state of the password-reset action.
-     * TODO: should be more like getPasswordResetSuccessStatus
-     * @return boolean
-     */
+    // Gets the success state of the password-reset action.
     public function passwordResetWasSuccessful()
-    {
+    {   
+        // if the password reset was successful
         return $this->password_reset_was_successful;
     }
 
-    /**
-     * Gets the username
-     * @return string username
-     */
+    // Gets the username
     public function getUsername()
     {
+        // simple function to return the username
         return $this->user_name;
     }
 
@@ -757,6 +998,7 @@ class Login
      */
     public function getGravatarImageUrl($email, $s = 50, $d = 'mm', $r = 'g', $atts = array() )
     {
+        // this is a function for the Gravatar website
         $url = 'http://www.gravatar.com/avatar/';
         $url .= md5(strtolower(trim($email)));
         $url .= "?s=$s&d=$d&r=$r&f=y";
