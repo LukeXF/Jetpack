@@ -1,11 +1,10 @@
 <?php
     include('assets/header.php');
-    include('assets/navbar.php');
 
     if ($login->isUserLoggedIn() == true) {
-        include("views/v-account.php");
+        $siteFunctions->callback(); // redirect to home page
     } else {
-        include("views/v-signin.php");
+		include('views/v-login.php');
     }
 
     include('assets/footer.php');

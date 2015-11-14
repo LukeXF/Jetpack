@@ -1,28 +1,27 @@
-
 #
-#	  Author :		Luke Brown
-#	  License:  	Contracted work - Written permission required from me for third party use.
-#	  Created: 		May 2015
-#	  URL    :		https://github.com/LukeXF/jetpack
-#	  Contact:		me@luke.sx
+#   Author :    Luke Brown
+#   License:    Contracted work - Written permission required from me for third party use.
+#   Created:    October 2015
+#   Contact:    me@luke.sx
 #
 
-RewriteEngine On
-Options -Indexes
+#RewriteEngine On
+#Options -Indexes
+#ErrorDocument 403 404.php
+#ErrorDocument 404 404.php
 
-ErrorDocument 403 http://jetpack/
-ErrorDocument 404 http://jetpack/
+#RewriteEngine On
+#RewriteBase /
 
-# don't touch /assets URIs
-#RewriteRule ^assets/ - [L,NC]
-
-php_flag display_startup_errors on
-php_flag display_errors on
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{DOCUMENT_ROOT}/$1\.php -f
+#RewriteRule ^([^/]+)/?$ $1.php [L]
 
 
-RewriteEngine On
-RewriteBase /
 
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{DOCUMENT_ROOT}/$1\.php -f
-RewriteRule ^([^/]+)/?$ $1.php [L]
+# RewriteRule ^support/([^/]+)$ support.php?ticket=$1
+#RewriteRule ^support/([^/]*)/?(.*)$ support.php?id=$1&subject=$2
+
+
+#php_flag  display_errors        on
+#php_value error_reporting       2039

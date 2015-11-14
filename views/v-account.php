@@ -1,76 +1,57 @@
-<div class="jumbotron smaller">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <h1 class="slideDown">Account Overview</h1>
-            </div>
-        </div>
-    </div>
+	<?php
 
-</div>
+	$navbar = array(
+		"Personal Details" 	=> array( "active" => "", "logo" => "edit",	 	 	"tooltip"=>"change your personal details", "url" => "personal"),
+		"Billing Details" 	=> array( "active" => "", "logo" => "credit-card", 	"tooltip"=>"manage your payment options", "url" => "billing"),
+		"Notifications" 	=> array( "active" => "", "logo" => "inbox", 	 	"tooltip"=>"change how we message you", "url" => "notifications"),
+		"Subscriptions" 	=> array( "active" => "", "logo" => "key", 	 		"tooltip"=>"review previous invoices", "url" => "subscriptions")
+	);
+	if ( empty($_GET['p']) ) {
+		$activeTab = "personal";
+	} else {
+		$activeTab = $_GET['p'];
+	}
 
+	if (!empty($_GET['p'])) {
+		if ($_GET['p'] == 'personal'){
+			$select_tab = 'views/dash/d-personal.php';
+		} elseif ($_GET['p'] == 'billing'){
+			$select_tab = 'views/dash/d-billing.php';
+		} elseif ($_GET['p'] == 'notifications'){
+			$select_tab = 'views/dash/d-notifications.php';
+		} elseif ($_GET['p'] == 'subscriptions'){
+			$select_tab = 'views/dash/d-subscriptions.php';
+		} else {
+			$select_tab = 'views/dash/d-personal.php';
+		}
+	} else {
+		$select_tab = 'views/dash/d-personal.php';
+	}
+
+?>
 <div class="container">
-    <div class="row">
-    	<div class="col-md-6 col-md-offset-3 contentbox">
+	<div class="row">
 
-    		<div class="row">
-		    	<div class="col-md-3">
-					<img src="<?php echo $grav_url; ?>">
-				</div>
-		    	<div class="col-md-9">
+		<div class="col-md-10 col-md-offset-1">
 
-		    		<h5>You are logged in as <b><?php echo $_SESSION['user_name']; ?></b> </h5>
-
-				    <a href="?logout"><?php echo WORDING_LOGOUT; ?></a> - 
-				    <a href="edit.php"><?php echo WORDING_EDIT_USER_DATA; ?></a>
-		    	</div>
-			</div>
-
+			<?php // $siteFunctions->debug($_POST); ?>
+			<?php // $siteFunctions->debug($_FILES); ?>
+			<?php // $siteFunctions->debug($_SESSION); ?>
+			<ul class="nav nav-tiles">
+				<h3 align="center">Account Settings</h3>
+				<?php $siteFunctions->navbar($navbar, true, true); ?>
+			</ul>
 		</div>
-    	<div class="col-md-6 col-md-offset-3 contentbox">
 
-    		<div class="row">
-		    	<div class="col-md-12">
-		    		<h5>Accessiable Information:</h5>
-		    		<table style="width:100%">
-						<tr>
-							<th width="20%">Type</th>
-							<th width="65%">Code</th>
-							<th width="15%">Output</th>
-						</tr>
-						<tr>
-							<td>User ID</td>
-							<td><code>&#60;?php echo $_SESSION['user_id']; ?&#62;</code></td>
-							<td><?php echo $_SESSION['user_id'] ?></td> 
-						</tr>
-						<tr>
-							<td>User Name</td>
-							<td><code>&#60;?php echo $_SESSION['user_name']; ?&#62;</code></td>
-							<td><?php echo $_SESSION['user_name'] ?></td> 
-						</tr>
-						<tr>
-							<td>User Email</td>
-							<td><code>&#60;?php echo $_SESSION['user_email; ?&#62;</code></td>
-							<td><?php echo $_SESSION['user_email'] ?></td> 
-						</tr>
-						<tr>
-							<td>User Status</td>
-							<td><code>&#60;?php echo $_SESSION['user_logged_in']; ?&#62;</code></td>
-							<td><?php echo $_SESSION['user_logged_in'] ?></td> 
-						</tr>
-						<tr>
-							<td>User Image</td>
-							<td><code>&#60;img src="&#60;?php echo $grav_url ?&#62;"&#62;</code></td>
-							<td><img style="width: 65px;" src="<?php echo $grav_url; ?>"></td> 
-						</tr>
-						<tr>
-							<td></td>
-							<td></td> 
-						</tr>
-					</table>
-				</div>
+		<div class="col-md-12">
+			<div class="select-tab">
+				<?php
+				include ($select_tab);
+				?>
 			</div>
-
 		</div>
+
 	</div>
+
+
 </div>

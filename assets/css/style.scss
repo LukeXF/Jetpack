@@ -1,0 +1,430 @@
+// General styling
+
+
+
+* {
+    font-family: "proxima-nova", sans-serif;
+    text-decoration: none;
+    font-weight: 300
+}
+
+body {
+    background-color: #efefef;
+
+    .tile {
+        background-color: white;
+        padding: 20px auto;
+    }
+
+    .animate, .animate:hover, .animate:focus, .animate:active {
+        transition: all .25s ease-in-out;
+        -moz-transition: all .25s ease-in-out;
+        -webkit-transition: all .25s ease-in-out;
+    }
+
+    .animate-long, .animate-long:hover {
+        transition: all .75s ease-in-out;
+        -moz-transition: all .75s ease-in-out;
+        -webkit-transition: all .75s ease-in-out;
+    }
+
+    input, select {
+        @extend .animate;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        width: 100%;
+    }
+
+    input:focus {
+        outline-color: #222;
+        @extend .animate;
+    }
+
+    .form-btn {
+        text-align: right;
+        display: inherit;
+
+        .btn {
+            background-color: #222;
+            font-weight: bold;
+            color: white;
+        }
+    }
+    .btn-black {
+        @extend .animate;
+        background-color: #222;
+        color: white;
+    }
+    .btn-black:hover {
+        @extend .animate;
+        @extend  .btn-black;
+        background-color: #333;
+        border: 1px solid #222;
+    }
+}
+
+// Styling for forms
+.contentbox {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 30px 30px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    -webkit-box-shadow: 0 0 3px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 0 3px 2px rgba(0,0,0,0.1);
+
+    a {
+        color: #111;
+        font-weight: bold;
+    }
+
+    a:hover, label:hover {
+        text-decoration: none;
+        color: #dc6526
+    }
+
+    > a {
+        text-transform: none !important;
+        text-align: right;
+        width: 49%;
+        min-width: 49%;
+        max-width: 49%;
+        display: inline-block;
+    }
+
+    img {
+        margin: auto;
+        display: block;
+        width: 75px;
+        padding-bottom: 20px;
+    }
+
+    > a:first-of-type {
+        text-align: left;
+    }
+
+    img.captcha {
+        width: 100%;
+        padding: 0 100px;
+        margin: 10px auto;
+        box-shadow: none;
+        border: 1px solid #ccc;
+        border-radius: 0;
+        display: -webkit-box;
+        background-color: white;
+    }
+
+    label {
+        margin-bottom: 15px;
+        vertical-align: -webkit-baseline-middle;
+    }
+
+
+    input, select {
+        margin: 10px 0;
+        padding: 17px;
+        border: 1px solid #ddd;
+        width: 100%;
+        font-size: 17px;
+    }
+
+    input[type=checkbox] {
+        margin-bottom: 15px;
+        margin-right: 6px;
+        width: 16px;
+        height: 16px;
+        -webkit-border-radius: 20px;
+        -moz-border-radius: 20px;
+        border-radius: 20px;
+        border: transparent;
+    }
+
+    input.box {
+        background: #222 !important;
+        color: white !important;
+        border: 1px solid #222 !important;
+        font-weight: 300;
+        border-radius: 0 !important;
+        padding: 10px;
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .box {
+        min-width: 250px;
+        max-width: 300px;
+        height: 60px;
+        color: white;
+        font-size: 20px;
+        padding: 15px 25px;
+        margin-bottom: 10px;
+        display: -webkit-inline-box;
+        border: transparent;
+        font-weight: 300;
+    }
+
+    .box-small {
+        padding: 10px 20px !important;
+        font-size: 13px;
+        max-width: 300px;
+        margin-top: 9px;
+        height: 40px;
+        text-align: center;
+    }
+}
+
+// navbar styling
+nav {
+
+    background-color: white !important;
+
+    .navbar-brand > img {
+        height: 100%;
+        margin-top: 0;
+    }
+
+    img.nav-image {
+        display: -webkit-inline-box;
+        height: 40px;
+        margin: -20px 10px -20 0;
+        border-radius: 50px;
+    }
+
+    .navbar-nav {
+        > li > a {
+            padding-top: 25px;
+            padding-bottom: 25px;
+            font-size: 18px;
+        }
+        .active {
+            a, a:hover, a:focus {
+                background-color: transparent !important;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .navbar-brand {
+        padding: 0;
+        margin: 10px;
+    }
+
+}
+
+// dashboard menu styling
+.nav-tiles {
+
+    .title {
+        font-size: 20px;
+    }
+    li {
+        padding: 0 0;
+
+        a {
+            border: 1px solid #E6E6E6;
+            background-color: #ededed;
+            color: #999
+        }
+
+        a:hover {
+            background-color: #eee !important;
+        }
+
+
+    }
+
+
+    // the active dashboard button
+    li.active {
+        a {
+            background: #fff;
+            color: #222;
+            border-bottom: 1px solid white;
+            font-weight: bold;
+        }
+
+        a:hover {
+            background-color: white !important;
+        }
+    }
+
+}
+
+// The dashboard styling
+.select-tab {
+
+    > .tile:first-child {
+        margin-top: 0 !important;
+    }
+
+    .row.tile {
+        margin: 20px 70px;
+        border: 1px solid #ddd;
+
+        > div {
+            padding: 20px 30px;
+        }
+    }
+
+    .form-btn-center {
+        @extend .form-btn;
+        text-align: center !important;
+        margin: 25px auto;
+
+        .btn {
+            padding: 10px 50px;
+        }
+    }
+
+    .tile-dark {
+        background-color: #F7F7F7;
+        border-left: 1px solid #eee;
+    }
+
+    .tile-image {
+        @extend .tile-dark;
+        border: 1px solid #eee;
+        padding: 20px;
+
+        img {
+            width: 80px;
+        }
+    }
+    // for the form without modal button
+    .tile-avatar-and-fullname {
+        margin: 0;
+        padding: 0 0 !important;
+
+        .tile-fullname {
+            padding: 50px 20px;
+
+            label {
+                margin-bottom: -10px;
+            }
+
+            select {
+                border-radius: 0px;
+                padding: 10px 8px;
+                height: 42px;
+            }
+        }
+    }
+
+}
+
+// modal styling
+.modal {
+    overflow-y: auto;
+
+    .modal-content {
+        -webkit-box-shadow: 0 5px 15px rgba(0,0,0,.5);
+        box-shadow: 0 5px 15px rgba(0,0,0,.2);
+        border-radius: 0px;
+        border: 1px solid white;
+    }
+
+    .modal-content, .modal.in .modal-dialog {
+        max-width: 450px;
+        margin: auto;
+        margin-top: 100px;
+        border: none;
+    }
+
+    .modal-body {
+        padding: 0px 15px;
+
+
+        > .row {
+            background-color: #eee;
+            border: 1px solid #ddd;
+        }
+
+        p {
+            margin: 0 0 10px;
+            padding: 21px 0 0;
+            text-align: right;
+        }
+
+        .flag-icon {
+            border-radius: 2px;
+        }
+    }
+
+    .modal-lg {
+        .modal-content {
+            max-width: none;
+
+        }
+    }
+
+}
+
+.modal-open {
+    overflow: auto;
+}
+
+
+.tile-weather {
+
+    border-right: 1px solid #ccc;
+    ul {
+        padding: 0px;
+
+        li {
+            display: block;
+            margin: 10px auto;
+
+            .weather-padding {
+                padding: 20px 10px;
+                background-color: #fff;
+
+                :first-of-type {
+                    text-align: center;
+                }
+                h3 {
+                    margin: 0;
+                    margin-top: 5px;
+                }
+                h4 {
+                    margin: 0;
+                    i {
+                        font-size: 15px;
+                    }
+                }
+                h5 {
+                    margin: 0;
+                    opacity: 0.7;
+                }
+                .wi {
+                    float: right;
+                    font-size: 36px;
+                }
+            }
+        }
+    }
+}
+
+.tile {
+    border: 1px solid #ccc;
+
+    & .tile-padding {
+        padding: 20px;
+    }
+
+    .table {
+        th {
+            font-weight: bold;
+        }
+
+        td {
+            vertical-align: inherit;
+            img {
+                max-height: 40px;
+                border-radius: 50px;
+                margin-right: 5px;
+            }
+        }
+    }
+
+
+}

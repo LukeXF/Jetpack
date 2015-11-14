@@ -1,12 +1,11 @@
 <?php
 
 // Handles the session, login and logout
-class Login
+class Login extends siteFunctions
 {
 
     // setup the predefined variables of this class
-    private $db_connection                  = null; // object $db_connection The database connection
-    private $user_id                        = null; // int $user_id The user's id    
+    private $user_id                        = null; // int $user_id The user's id
     private $user_name                      = ""; // string $user_name The user's name
     private $user_email                     = ""; // string $user_email The user's mail
     private $user_is_logged_in              = false; // boolean $user_is_logged_in The user's login status
@@ -15,15 +14,21 @@ class Login
     public $user_gravatar_image_tag         = ""; // string $user_gravatar_image_tag The user's gravatar profile pic url with <img ... /> around
     private $password_reset_link_is_valid   = false; // boolean $password_reset_link_is_valid Marker for view handling
     private $password_reset_was_successful  = false; // boolean $password_reset_was_successful Marker for view handling
-    public $errors                          = array(); // array $errors Collection of error messages
-    public $messages                        = array(); // array $messages Collection of success / neutral messages
 
     // the function "__construct()" automatically starts whenever an object of this class is created,
     // this is done with "$login = new Login();"
     public function __construct()
     {
+        if (version_compare(PHP_VERSION, '5.3.7', '<')) {
+            exit('Password Script Failed');
+        } else if (version_compare(PHP_VERSION, '5.5.0', '<')) {
+            require_once('classes/PasswordCompatibility.php');
+        }
+
         // create/read session
-        session_start();
+        if (empty($_SESSION)) {
+            session_start();
+        }
 
         // if user tried to log out on any page
         if (isset($_GET["logout"])) {
@@ -33,7 +38,7 @@ class Login
             $this->doLogout();
 
 
-        // if user has an active session on the server
+            // if user has an active session on the server
         } elseif (!empty($_SESSION['user_name']) && ($_SESSION['user_logged_in'] == 1)) {
 
             // PLACE FUNCTIONS HERE FOR IF THE USER IS LOGGED IN
@@ -49,25 +54,29 @@ class Login
                 $this->editUserName($_POST['user_name']);
 
 
-            // user try to change their email
+                // user try to change their email
             } elseif (isset($_POST["user_edit_submit_email"])) {
 
                 // function below uses use $_SESSION['user_id'] and $_SESSION['user_email']
                 $this->editUserEmail($_POST['user_email']);
 
 
-            // user try to change their password
+                // user try to change their password
             } elseif (isset($_POST["user_edit_submit_password"])) {
 
                 // function below uses $_SESSION['user_name'] and $_SESSION['user_id']
                 $this->editUserPassword($_POST['user_password_old'], $_POST['user_password_new'], $_POST['user_password_repeat']);
-            
 
+
+                // user tries to update images or their first/last name
+            } elseif (isset($_POST['user_update_appearance'])) {
+
+                $this->editAppearance($_POST['user_first_name'], $_POST['user_last_name'], $_POST['avatar']);
             }
 
 
 
-        // login with cookie
+            // login with cookie
         } elseif (isset($_COOKIE['rememberme'])) {
 
             // if there is a cookie present, hmmmm cookies
@@ -76,7 +85,7 @@ class Login
 
 
 
-        // if user just submitted a login form
+            // if user just submitted a login form
         } elseif (isset($_POST["login"])) {
 
             // if they did not click the remember me button (do not remember them via cookie)
@@ -111,7 +120,7 @@ class Login
         } elseif (isset($_GET["user_name"]) && isset($_GET["verification_code"])) {
 
             // checks if the verification string in the account verification mail is valid and matches to the user.
-            // this also handles the expiring of the the verification links for the password reset 
+            // this also handles the expiring of the the verification links for the password reset
             $this->checkIfEmailVerificationCodeIsValid($_GET["user_name"], $_GET["verification_code"]);
 
 
@@ -137,44 +146,8 @@ class Login
             // generate the gravatar picture of the logged in user with this function
             $this->getGravatarImageUrl($this->user_email);
         }
-    // end of construct function... finally.
+        // end of construct function... finally.
     }
-
-
-
-
-    // Checks if database connection is opened and open it if not (the start of all queries for registration)
-    private function databaseConnection()
-    {
-        // connection already opened
-        if ($this->db_connection != null) {
-
-            // there is already a connection open so return true
-            return true;
-
-        } else {
-
-            // create a database connection, using the constants from config/config.php
-            try {
-
-                // create the start of PDO query
-                $this->db_connection = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
-
-                // return true now that the connection is opened
-                return true;
-
-            } catch (PDOException $e) {
-
-                // If an error is catched, database connection failed
-                $this->errors[] = MESSAGE_DATABASE_ERROR;
-
-                // return false :(
-                return false;
-
-            }
-        }
-    }
-
 
 
 
@@ -238,7 +211,7 @@ class Login
                 if ($this->databaseConnection()) {
 
                     // get real token from database (and all other data)
-                    $sth = $this->db_connection->prepare("SELECT user_id, user_name, user_email FROM users WHERE user_id = :user_id
+                    $sth = $this->db_connection->prepare("SELECT user_id, user_name, user_email, user_first_name, user_last_name, user_avatar, user_display_avatar FROM users WHERE user_id = :user_id
                                                       AND user_rememberme_token = :user_rememberme_token AND user_rememberme_token IS NOT NULL");
                     // prepared statement for the user id from the cookie
                     $sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
@@ -259,7 +232,14 @@ class Login
                         $_SESSION['user_id'] = $result_row->user_id;
                         $_SESSION['user_name'] = $result_row->user_name;
                         $_SESSION['user_email'] = $result_row->user_email;
+                        $_SESSION['user_first_name'] = $result_row->user_first_name;
+                        $_SESSION['user_last_name'] = $result_row->user_last_name;
                         $_SESSION['user_logged_in'] = 1;
+                        $_SESSION['user_account_type'] = $result_row->user_account_type;
+                        $_SESSION['user_display_avatar'] = $result_row->user_display_avatar;
+                        if ($result_row->user_avatar != null) {
+                            $_SESSION['user_avatar'] = 1;
+                        }
 
                         // declare user id, set the login status to true
                         $this->user_id = $result_row->user_id;
@@ -301,7 +281,7 @@ class Login
             // if the password is empty
             $this->errors[] = "Password field was empty";
 
-        // if POST data (from login form) contains non-empty user_name and non-empty user_password
+            // if POST data (from login form) contains non-empty user_name and non-empty user_password
         } else {
             // user can login with his username or his email address.
             // if user has not typed a valid email address, we try to identify him with his user_name
@@ -309,14 +289,14 @@ class Login
                 // database query, getting all the info of the selected user
                 $result_row = $this->getUserData(trim($user_name));
 
-            // if user has typed a valid email address, we try to identify him with his user_email
+                // if user has typed a valid email address, we try to identify him with his user_email
             } else if ($this->databaseConnection()) {
                 // database query, getting all the info of the selected user
                 $query_user = $this->db_connection->prepare('SELECT * FROM users WHERE user_email = :user_email');
                 // prepared statement for the user's email address
                 // login via email address
                 $query_user->bindValue(':user_email', trim($user_name), PDO::PARAM_STR);
-                // excute the query 
+                // execute the query
                 $query_user->execute();
                 // get result row (as an object)
                 $result_row = $query_user->fetchObject();
@@ -324,9 +304,9 @@ class Login
 
             // if this user not exists
             if (! isset($result_row->user_id)) {
-               
+
                 // this error message does not return any data relating to if the account is an account
-                // therefor it stops hackers and display the login error. 
+                // therefor it stops hackers and display the login error.
                 $this->errors[] = "Login failed.";
 
 
@@ -335,13 +315,13 @@ class Login
                 $this->errors[] = "You have entered an incorrect password 3 or more times already. Please wait 30 seconds to try again.";
 
 
-            // using PHP 5.5's password_verify() function to check if the provided passwords fits to the hash of that user's password
+                // using PHP 5.5's password_verify() function to check if the provided passwords fits to the hash of that user's password
             } else if (! password_verify($user_password, $result_row->user_password_hash)) {
 
                 // increment the failed login counter for that user (to watch out for stupid people and brute force attacks)
                 $sth = $this->db_connection->prepare('UPDATE users '
-                        . 'SET user_failed_logins = user_failed_logins+1, user_last_failed_login = :user_last_failed_login '
-                        . 'WHERE user_name = :user_name OR user_email = :user_name');
+                    . 'SET user_failed_logins = user_failed_logins+1, user_last_failed_login = :user_last_failed_login '
+                    . 'WHERE user_name = :user_name OR user_email = :user_name');
 
                 // excute the failed attempts query into the database
                 $sth->execute(array(':user_name' => $user_name, ':user_last_failed_login' => time()));
@@ -350,7 +330,7 @@ class Login
                 $this->errors[] = "Wrong password. Try again.";
 
 
-            // has the user activated their account with the verification email
+                // has the user activated their account with the verification email
             } else if ($result_row->user_active != 1) {
 
                 // they need to stop logging in and start verifying their address
@@ -365,7 +345,14 @@ class Login
                 $_SESSION['user_id'] = $result_row->user_id;
                 $_SESSION['user_name'] = $result_row->user_name;
                 $_SESSION['user_email'] = $result_row->user_email;
+                $_SESSION['user_first_name'] = $result_row->user_first_name;
+                $_SESSION['user_last_name'] = $result_row->user_last_name;
                 $_SESSION['user_logged_in'] = 1;
+                $_SESSION['user_account_type'] = $result_row->user_account_type;
+                $_SESSION['user_display_avatar'] = $result_row->user_display_avatar;
+                if ($result_row->user_avatar != null) {
+                    $_SESSION['user_avatar'] = 1;
+                }
 
                 // declare user id, set the login status to true (this->value is used as result_row in other functions)
                 $this->user_id = $result_row->user_id;
@@ -375,8 +362,8 @@ class Login
 
                 // reset the failed login counter for that user now that they have logged in
                 $sth = $this->db_connection->prepare('UPDATE users '
-                        . 'SET user_failed_logins = 0, user_last_failed_login = NULL '
-                        . 'WHERE user_id = :user_id AND user_failed_logins != 0');
+                    . 'SET user_failed_logins = 0, user_last_failed_login = NULL '
+                    . 'WHERE user_id = :user_id AND user_failed_logins != 0');
                 // excute the code where the user is successful
                 $sth->execute(array(':user_id' => $result_row->user_id));
 
@@ -416,7 +403,7 @@ class Login
                             // inform the user that their password has be better protected (not really relavant to the user)
                             $this->messages['We\'ve updated your password encryption to make it more safer for you.'];
                         } else {
-                            
+
                             // if there was an error generating the hash
                             $this->messages['There was an issue with your password hash, please contact support.'];
                         }
@@ -424,16 +411,16 @@ class Login
                 }
 
 
-            // end of successfull statement
-            } 
-          // end of valid user part of login function  
+                // end of successfull statement
+            }
+            // end of valid user part of login function
         }
         // end of standard login function
     }
 
 
 
-    
+
     // Create all data needed for remember me cookie connection on client and server side
     private function newRememberMeCookie()
     {
@@ -528,15 +515,15 @@ class Login
         if (!empty($user_name) && $user_name == $_SESSION['user_name']) {
             $this->errors[] = "Sorry, that username is the same as your current one. Please choose another one.";
 
-        // username cannot be empty and must be azAZ09 and 2-64 characters
-        } elseif (empty($user_name) || !preg_match("/^(?=.{2,64}$)[a-zA-Z][a-zA-Z0-9]*(?: [a-zA-Z0-9]+)*$/", $user_name)) {
+            // username cannot be empty and must be azAZ09 and 2-64 characters
+        } elseif (empty($user_name) || !preg_match("/^(?=.{2,32}$)[a-zA-Z][a-zA-Z0-9]*(?: [a-zA-Z0-9]+)*$/", $user_name)) {
 
             // return an error that the username is invalid
-            $this->errors[] = "Username does not fit the name scheme: only a-Z and numbers are allowed, 2 to 64 characters";
+            $this->errors[] = "Username does not fit the correct format: only a-Z and numbers are allowed, 2 to 32 characters";
 
         } else {
 
-            // check if new username already exists 
+            // check if new username already exists
             $result_row = $this->getUserData($user_name);
 
             // if the user name is already in use
@@ -555,7 +542,7 @@ class Login
                 // execute the query to edit the user's name
                 $query_edit_user_name->execute();
 
-                // if the user name successfull update 
+                // if the user name successfull update
                 if ($query_edit_user_name->rowCount()) {
 
                     // set the new username into session
@@ -587,14 +574,14 @@ class Login
             // output error
             $this->errors[] = "Sorry, that email address is the same as your current one. Please choose another one.";
 
-        // user mail cannot be empty and must be in email format
+            // user mail cannot be empty and must be in email format
         } elseif (empty($user_email) || !filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
 
             // most modern browers should even prevent the username from the email
             $this->errors[] = "Your email address is not in a valid email format";
 
         } else if ($this->databaseConnection()) {
-            // check if new email already exists 
+            // check if new email already exists
             $query_user = $this->db_connection->prepare('SELECT * FROM users WHERE user_email = :user_email');
             $query_user->bindValue(':user_email', $user_email, PDO::PARAM_STR);
             $query_user->execute();
@@ -650,19 +637,19 @@ class Login
             $this->errors[] = "Password field was empty";
 
 
-        // is the repeat password identical to password
+            // is the repeat password identical to password
         } elseif ($user_password_new !== $user_password_repeat) {
 
             // passwords are the same error message
             $this->errors[] = "Password and password repeat are not the same";
 
-        // password need to have a minimum length of 6 characters
+            // password need to have a minimum length of 6 characters
         } elseif (strlen($user_password_new) < 6) {
 
             // if the password is shorter than six characters
             $this->errors[] = "Password has a minimum length of 6 characters";
 
-        // all the above tests are ok
+            // all the above tests are ok
         } else {
 
             // database query, getting hash of currently logged in user (to check with just provided password)
@@ -690,13 +677,13 @@ class Login
                     // check if exactly one row was successfully changed:
                     if ($query_update->rowCount()) {
 
-                        // output that password was changed if the MySQL query 
+                        // output that password was changed if the MySQL query
                         $this->messages[] = "Password successfully changed!";
 
 
                     } else {
 
-                        // if the MySQL query returns nothing then fail 
+                        // if the MySQL query returns nothing then fail
                         $this->errors[] = "Sorry, your password changing failed.";
                     }
                 } else {
@@ -714,6 +701,45 @@ class Login
 
 
 
+
+    public function editAppearance($user_first_name, $user_last_name, $avatar_display){
+
+        $this->saveFullName($user_first_name, $user_last_name, $avatar_display);
+    }
+
+
+    Private function saveFullName($user_first_name, $user_last_name, $avatar_display) {
+        global $_SESSION;
+
+        if ($this->databaseConnection()) {
+
+            $sql = $this->db_connection->prepare('UPDATE `users` SET `user_first_name` = :user_first_name, `user_last_name` = :user_last_name, `user_display_avatar` = :user_display_avatar WHERE `user_id` = :user_id');
+
+            $sql->bindValue(':user_first_name', 	$user_first_name			, PDO::PARAM_STR);
+            $sql->bindValue(':user_last_name', 	    $user_last_name			    , PDO::PARAM_STR);
+            $sql->bindValue(':user_display_avatar', $avatar_display			    , PDO::PARAM_STR);
+            $sql->bindValue(':user_id',      		$_SESSION['user_id']		, PDO::PARAM_INT);
+
+            // execute the Instagram save and check response
+            if ($sql->execute()) {
+                $_SESSION['user_first_name'] =      $user_first_name;
+                $_SESSION['user_last_name'] =       $user_last_name;
+                $_SESSION['user_display_avatar'] =  $avatar_display;
+                return $this->callbackMessage("Your first and last name has been successfully updated", "success");
+            } else {
+                return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", please contact support." , "danger");
+            }
+
+        } else {
+
+            return $this->callbackMessage("Database connection open", "danger");
+
+        }
+    }
+
+    private function saveAvatar($files){
+
+    }
 
     // Sets a random token into the database (that will verify the user when he/she comes back via the link
     // in the email) and sends the according email.
@@ -812,7 +838,7 @@ class Login
 
 
         // generates the link for the verfication using URL enconde to support all email types
-        $link = $GLOBALS['domain'] . 'register' . $GLOBALS['dotPHP'] . '?user_name=' . urlencode($user_name) . '&verification_code=' . urlencode($user_password_reset_hash);
+        $link = $GLOBALS['domain'] . 'password_reset' . $GLOBALS['dotPHP'] . '?user_name=' . urlencode($user_name) . '&verification_code=' . urlencode($user_password_reset_hash);
 
 
 
@@ -894,6 +920,10 @@ class Login
         }
     }
 
+
+
+
+
     // Checks and writes the new password as the password has been reset
     public function editNewPassword($user_name, $user_password_reset_hash, $user_password_new, $user_password_repeat)
     {
@@ -907,21 +937,21 @@ class Login
             $this->errors[] = "Password field was empty";
 
 
-        // is the repeat password identical to password
+            // is the repeat password identical to password
         } else if ($user_password_new !== $user_password_repeat) {
 
             // passwords do not match error
             $this->errors[] = "The passwords do not match";
 
 
-        // password need to have a minimum length of 6 characters
+            // password need to have a minimum length of 6 characters
         } else if (strlen($user_password_new) < 6) {
 
             // the password is too short error
             $this->errors[] = "Password has a minimum length of 6 characters";
 
 
-        // if database connection opened
+            // if database connection opened
         } else if ($this->databaseConnection()) {
             // get the hash cost factor from the config file, or set to null if it doesn't exist there.
             $hash_cost_factor = (defined('HASH_COST_FACTOR') ? HASH_COST_FACTOR : null);
@@ -960,6 +990,10 @@ class Login
         }
     }
 
+
+
+
+
     // Gets the success state of the password-reset-link-validation.
     public function passwordResetLinkIsValid()
     {
@@ -967,12 +1001,20 @@ class Login
         return $this->password_reset_link_is_valid;
     }
 
+
+
+
+
     // Gets the success state of the password-reset action.
     public function passwordResetWasSuccessful()
-    {   
+    {
         // if the password reset was successful
         return $this->password_reset_was_successful;
     }
+
+
+
+
 
     // Gets the username
     public function getUsername()
@@ -981,7 +1023,11 @@ class Login
         return $this->user_name;
     }
 
-    
+
+
+
+
+
     /**
      * Get either a Gravatar URL or complete image tag for a specified email address.
      * Gravatar is the #1 (free) provider for email address based global avatar hosting.
@@ -1017,4 +1063,8 @@ class Login
         // the image url like above but with an additional <img src .. /> around
         $this->user_gravatar_image_tag = $url;
     }
+
+
+
+
 }

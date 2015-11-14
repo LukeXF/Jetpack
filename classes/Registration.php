@@ -15,11 +15,12 @@ class Registration
     // this is done with "$login = new Login();"
     public function __construct()
     {
-        // create a new session
-        session_start();
-
+        // create a new session if not already started
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
         // if we have such a POST request, call the registerNewUser() method
-        if (isset($_POST["register"])) {
+        if (isset($_POST["user_name"])) {
 
             // the create new user function is carried out if post data is submitted
             $this->registerNewUser($_POST['user_name'], $_POST['user_email'], $_POST['user_password_new'], $_POST['user_password_repeat'], $_POST["captcha"]);
@@ -49,14 +50,14 @@ class Registration
 
                 // create the start of PDO query
                 $this->db_connection = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
-
+                $this->db_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 // return true now that the connection is opened
                 return true;
 
             } catch (PDOException $e) {
 
                 // If an error is catched, database connection failed
-                $this->errors[] = MESSAGE_DATABASE_ERROR;
+                $this->errors[] = "Database connection problem." . $e;
 
                 // return false :(
                 return false;
@@ -190,7 +191,7 @@ class Registration
                     if ($this->sendVerificationEmail($user_id, $user_email, $user_activation_hash, $user_name)) {
 
                         // when mail has been send successfully
-                        $this->messages[] = "Your account has been created successfully and we have sent you an email. Please click the VERIFICATION LINK within that mail.";
+                        $this->messages[] = "Your account has been created successfully, check your emails.";
                         // return true for this function
                         $this->registration_successful = true; 
 
@@ -288,7 +289,7 @@ class Registration
         if($returned_message[0]['status'] == "sent") {
             return true;
         } else {
-            $this->errors[] = "Verification Mail NOT successfully sent! Error: " . $mail->ErrorInfo;
+            $this->errors[] = "Verification Mail NOT successfully sent! Error: " . $returned_message['message'];
             return false;
         }
     }

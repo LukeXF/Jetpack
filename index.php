@@ -1,12 +1,13 @@
 <?php
-    include('assets/header.php');
-    include('assets/navbar.php');
+	include('assets/header.php');
 
-    if ($login->isUserLoggedIn() == true) {
-        include("views/v-index.php");
-    } else {
-        include("views/v-index.php");
-    }
+	if ($login->isUserLoggedIn() == true) {
+		$activeTab = "Home";
+		include('assets/navbar.php');
+		include("views/v-index.php");
+	} else {
+		$siteFunctions->callback("login");
+	}
 
-    include('assets/footer.php');
+	include('assets/footer.php');
 ?>

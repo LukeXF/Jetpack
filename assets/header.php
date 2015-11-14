@@ -1,78 +1,38 @@
 <?php
-	if (version_compare(PHP_VERSION, '5.3.7', '<')) {
-	    exit('Sorry, this script does not run on a PHP version smaller than 5.3.7 !');
-	} else if (version_compare(PHP_VERSION, '5.5.0', '<')) {
-	    require_once('lib/password_compatibility_library.php');
-	}
 
+
+	// load classes
 	require_once('lib/config.php');
-	require_once('translations/en.php');
+	require_once('classes/siteFunctions.php');
 	require_once('classes/Login.php');
-	require_once('classes/SiteFunctions.php');
+	require_once('classes/Weather.php');
+	require_once('classes/ImageUpload.php');
+	require_once('classes/Payments.php');
+	require_once('classes/AdminUsers.php');
+
+
+	// initialize classes
+	$siteFunctions = new siteFunctions();
 	$login = new Login();
-<<<<<<< HEAD
-	$functions = new SiteFunctions();
-=======
-	$Functions = new SiteFunctions();
->>>>>>> origin/master
 
-	date_default_timezone_set('UTC');
-
-	// gravtar settings
-	$default = "404";
-	$size = "256";
-	$grav_url = "http://www.gravatar.com/avatar/" . md5( strtolower( trim( $_SESSION['user_email'] ) ) ) . "?d=" . urlencode( $default ) . "&s=" . $size; 
-
-
-	$navbar = array(
-		/*"Contact" =>   array(
-			"active" => "",
-			"url" => "#",
-			"submenu" => array()
-		),
-
-		"Purchase $brand" => array(
-			"active" => "",
-			"url" => "#",          
-			"submenu" => array()
-		)*/
-
-	);
 	if ($login->isUserLoggedIn() == true) {
-		// the login message
-		$navlogin = "Welcome <b>" . $_SESSION['user_name'] . "</b>";
 
-		$navbar2 = array(
-			"Follow Us" =>   array(
-				"active" => "",
-				"url" => "https://twitter.com/ElementsWorks' target='_blank",
-				"submenu" => array()
-			),
+		$weather = new Weather();
+		$imageUpload = new imageUpload();
+		$payments = new Payments();
+		$avatar = $siteFunctions->getAvatar();
+		// $siteFunctions->debug($_SESSION);
 
-			"$navlogin" => array(
-				"active" => "",
-				"url" => "",          
-				"submenu" => array(
-					"Summary" => "account",
-					"logout"  => "?logout"
-				)
-			)
+		$navbar = array(
+			"Home" 	=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url()),
+			"Store" 	=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url("store") )
 		);
 
-	} else {
-		$navbar2 = array(
-			"Register" =>   array(
-				"active" => "",
-				"url" => $domain . "register" . $dotPHP,
-				"submenu" => array()
-			),
+		if (isset($_SESSION['user_account_type']) && $_SESSION['user_account_type'] == "admin") {
+			$navbar['Admin'] = array( "active" => "", "logo" => "flaticon-id1", 		"url" => $siteFunctions->url("admin") );
+		}
 
-			"Login" => array(
-				"active" => "",
-				"url" => $domain . "login" . $dotPHP,          
-				"submenu" => array()
-			)
-		);
+
 	}
 
 ?>
@@ -85,15 +45,22 @@
 		<meta name="description" content="<?php echo $brand; ?>">
 		<meta name="author" content="Luke Brown, <?php echo $email; ?>">
 
-	    <title><?php echo $brand; ?></title>
+	    <title><?php echo $siteFunctions->setPageTitle(); ?></title>
 
-		<link rel="stylesheet" type="text/css"  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400|Raleway:400,300' rel='stylesheet' type='text/css'>
-		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/weather-icons.min.css">
+		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat'>
+		<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/style.css">
-		<link rel="icon" type="image/ico" href="<?php echo $domain; ?>assets/img/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/flag-icon.min.css">
+		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/black-tie.min.css">
+		<link rel="icon" 	   type="image/png" href="<?php echo $domain; ?>assets/img/logo.png">
 
+		<script src="//use.typekit.net/eoe6bhb.js"></script>
+		<script>try{Typekit.load();}catch(e){}</script>
 
-		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js"></script>
-		<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<?php echo $domain; ?>assets/js/jquery.min.js"></script>
+		<script type="text/javascript" src="<?php echo $domain; ?>assets/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="<?php echo $domain; ?>assets/js/stupidtable.min.js"></script>
+
 	</head>
