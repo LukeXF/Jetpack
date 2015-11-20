@@ -43,17 +43,17 @@ if (isset($registration)) {
 
 
 <div class="row tile">
-	<div class="row appearance-form-padding">
-		<div class="col-md-12">
-			<?php $siteFunctions->displayCallbackMessage(); ?>
-			<h3>Edit your appearance</h3>
-		</div>
+	<div class="row tile-avatar-and-fullname">
 		<form method="post" action="settings.php?p=personal" enctype="multipart/form-data">
 			<div class="col-md-8">
+				<div class="col-md-12">
+					<?php $siteFunctions->displayCallbackMessage(); ?>
+					<h3>Edit your appearance</h3>
+				</div>
 				<?php
 					// if the user has an avatar already set
 					if (isset($_SESSION['user_avatar'])) {
-						echo "already set";
+						$imageUpload->displayCurrentAvatar($_SESSION['user_name']);
 					} else {
 						$imageUpload->displayUpload();
 
@@ -62,42 +62,19 @@ if (isset($registration)) {
 			</div>
 
 
-			<div class="col-md-4">
+			<div class="col-md-4 tile-dark tile-fullname">
 				<label for="user_first_name">First Name</label>
 				<input placeholder="Your first name" id="user_first_name" value="<?php echo $_SESSION['user_first_name']; ?>" type="text" name="user_first_name" pattern="[a-zA-Z0-9]{2,64}"  />
 
 				<label for="user_last_name">Last Name</label>
 				<input placeholder="Your last name" id="user_last_name" value="<?php echo $_SESSION['user_last_name']; ?>" type="text" name="user_last_name" pattern="[a-zA-Z0-9]{2,64}"  />
 				<div class="form-btn">
-					<button type="submit" class="btn btn-default" name="user_update_appearance" value="Change Username" class="btn btn-default" type="submit">Submit</button>
+					<button type="submit" class="btn btn-default" name="user_update_appearance" value="Change Username" class="btn btn-default" type="submit">Save Name</button>
 				</div>
 			</div>
 		</form>
 	</div>
 </div>
-
-
-
-<!--
-* Copyright (c) 2008 http://www.webmotionuk.com / http://www.webmotionuk.co.uk
-* Date: 2008-11-21
-* "PHP & Jquery image upload & crop"
-* Ver 1.2
-* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-* THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
--->
-
 
 
 

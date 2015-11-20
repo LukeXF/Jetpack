@@ -8,6 +8,9 @@
  */
 class ImageUpload extends siteFunctions
 {
+    private $upload_dir = "assets/img/avatars_backend";
+    public $large_image_prefix = "resize_";
+    public $thumb_image_prefix = "avatar_";
 
     public function displayUpload() {
 
@@ -21,17 +24,17 @@ class ImageUpload extends siteFunctions
         // right now the random key (file names) are going off the session id, but timestamp can be used instead
         if (!isset($_SESSION['avatar']['random_key']) || strlen($_SESSION['avatar']['random_key'])==0){
             $_SESSION['avatar']['random_key'] = $_SESSION['user_id']; //assign the timestamp to the session variable
-            $_SESSION['avatar']['user_file_ext']= "";
+            $_SESSION['avatar']['user_file_ext'] = "";
         }
 
 
         // editable options
-        $upload_dir = "assets/img/avatars_backend"; 				// The directory for the images to be saved in
-        $upload_path = $upload_dir."/";				// The path to where the image will be saved
-        $large_image_prefix = "resize_"; 			// The prefix name to large image
-        $thumb_image_prefix = "avatar_";			// The prefix name to the thumb image
-        $large_image_name = $large_image_prefix.$_SESSION['avatar']['random_key'];     // New name of the large image (append the timestamp to the filename)
-        $thumb_image_name = $thumb_image_prefix.$_SESSION['avatar']['random_key'];     // New name of the avatar image (append the timestamp to the filename)
+        $upload_dir = $this->upload_dir;                                 				// The directory for the images to be saved in
+        $upload_path = $upload_dir."/";				                                    // The path to where the image will be saved
+        $large_image_prefix = $this->large_image_prefix;                       			// The prefix name to large image
+        $thumb_image_prefix = $this->thumb_image_prefix;                     			// The prefix name to the thumb image
+        $large_image_name = $large_image_prefix.$_SESSION['avatar']['random_key'];      // New name of the large image (append the timestamp to the filename)
+        $thumb_image_name = $thumb_image_prefix.$_SESSION['avatar']['random_key'];      // New name of the avatar image (append the timestamp to the filename)
         $max_file = "3"; 							// Maximum file size in MB
         $max_width = "500";							// Max width allowed for the large image
         $thumb_width = "100";						// Width of avatar image
@@ -316,8 +319,11 @@ class ImageUpload extends siteFunctions
         if (file_exists($thumb_image_location)) {
             unlink($thumb_image_location);
         }
+
+        $this->saveLocationToDatabase("", true);
+
         $this->callback("settings");
-        exit();
+        exit("Refresh the page, your avatar has been deleted");
     }
 
     private function resizeImage($image,$width,$height,$scale) {
@@ -413,24 +419,42 @@ class ImageUpload extends siteFunctions
         return $width;
     }
 
-    private function saveLocationToDatabase($filename){
+    private function saveLocationToDatabase($filename, $delete = false){
         global $_SESSION;
 
         if ($this->databaseConnection()) {
 
-            $sql = $this->db_connection->prepare('UPDATE `users` SET `user_avatar` = :filename WHERE `user_id` = :user_id');
+            // if the filename
+            if ($delete == true) {
+                $sql = $this->db_connection->prepare('UPDATE `users` SET `user_avatar` = null WHERE `user_id` = :user_id');
+                $sql->bindValue(':user_id',      		$_SESSION['user_id']		, PDO::PARAM_INT);
 
-            $sql->bindValue(':filename',         	$filename			        , PDO::PARAM_STR);
-            $sql->bindValue(':user_id',      		$_SESSION['user_id']		, PDO::PARAM_INT);
+                // execute the Instagram save and check response
+                if ($sql->execute()) {
+                    unset($_SESSION['avatar']);
+                    $_SESSION['user_avatar'] = 1;
 
-            // execute the Instagram save and check response
-            if ($sql->execute()) {
-                unset($_SESSION['avatar']);
-                $_SESSION['user_avatar'] = 1;
-                return $this->callbackMessage("Your avatar has now been set.", "success");
+                    unset($_SESSION['user_avatar']);
+                    return true;
+                } else {
+                    return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", unable to delete avatar location from database - please contact support." , "danger");
+                }
+
             } else {
-                return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", please contact support." , "danger");
+                $sql = $this->db_connection->prepare('UPDATE `users` SET `user_avatar` = :filename WHERE `user_id` = :user_id');
+                $sql->bindValue(':filename',         	$filename			        , PDO::PARAM_STR);
+                $sql->bindValue(':user_id',      		$_SESSION['user_id']		, PDO::PARAM_INT);
+
+                // execute the Instagram save and check response
+                if ($sql->execute()) {
+                    unset($_SESSION['avatar']);
+                    $_SESSION['user_avatar'] = 1;
+                    return $this->callbackMessage("Your avatar has now been set.", "success");
+                } else {
+                    return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", please contact support." , "danger");
+                }
             }
+
 
         } else {
 
@@ -451,15 +475,69 @@ class ImageUpload extends siteFunctions
             // fetch all from the widget
             $sql = $sql->fetchAll();
 
-            //$this->debug($sql);
+            // $this->debug($sql);
 
-            return $sql[0]['user_avatar'];
+            if ( isset($sql[0]['user_avatar']) ) {
+                return $sql[0]['user_avatar'];
+            } else {
+                return false;
+            }
 
         } else {
 
             return false;
 
         }
+    }
+
+    public function displayCurrentAvatar($user_name){
+
+        global $domain;
+        global $_SESSION;
+        $url = $domain . "assets/img/avatar.php?pic=" . $user_name;
+
+
+        // if delete is present and random key (user_id) is more than 0
+        if (isset($_GET['a']) && $_GET['a']=="delete" && strlen($_GET['t'])>0){
+            $this->deleteImage($this->upload_dir . "/" . $this->large_image_prefix . $_GET['t'], $this->upload_dir . "/" . $this->thumb_image_prefix . $_GET['t']);
+        }
+
+        echo "
+            <div class='col-md-12'>
+                You have set your own avatar, you can either submit a new one or remove it.
+             </div>
+            <div class='col-md-6'>
+                <div class='tile-image'>
+                    <div class='row'>
+                        <div class='col-md-4 col-xs-2' style='padding-right: 0;'>
+                             <img src='" . $url . "' class='img-circle' style='width:100%'>
+                             </div>
+
+                        <div class='col-md-8 col-xs-10'>
+                            <b>Site Avatar:</b><br>
+                             <span>This is your avatar you have uploaded to this site.<br>
+                             <a href=''>change</a> - <a href='?a=delete&t=" . $this->getUsersAvatar($_SESSION['user_name']) . "'>remove</a></span>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+
+            <div class='col-md-6'>
+                <div class='tile-image'>
+                    <div class='row'>
+                        <div class='col-md-4 col-xs-2' style='padding-right: 0;'>
+                             <img src='" . $this->get_gravatar($_SESSION['user_email']) . "' class='img-circle' style='width:100%'>
+                             </div>
+
+                        <div class='col-md-8 col-xs-10'>
+                            <b>Gravatar:</b><br>
+                             <span>This is your avatar loaded from the <a href='https://en.gravatar.com/' target='_blank'>Gravatar</a> system. You can change it on their website.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ";
     }
 
 

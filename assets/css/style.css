@@ -167,11 +167,19 @@ nav {
   margin: 25px auto; }
   .select-tab .form-btn-center .btn {
     padding: 10px 50px; }
-.select-tab .tile-dark {
+.select-tab .tile-dark, .select-tab .tile-image {
   background-color: #F7F7F7;
   border-left: 1px solid #eee; }
-.select-tab .appearance-form-padding {
-  margin: 5px -15px 20px; }
+.select-tab .tile-image {
+  border: 1px solid #eee;
+  padding: 20px; }
+  .select-tab .tile-image img {
+    width: 80px; }
+.select-tab .tile-avatar-and-fullname {
+  margin: 0;
+  padding: 0 0 !important; }
+  .select-tab .tile-avatar-and-fullname .tile-fullname {
+    padding: 50px 20px; }
 
 .modal {
   overflow-y: auto; }

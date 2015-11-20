@@ -272,9 +272,23 @@ nav {
         border-left: 1px solid #eee;
     }
 
+    .tile-image {
+        @extend .tile-dark;
+        border: 1px solid #eee;
+        padding: 20px;
+
+        img {
+            width: 80px;
+        }
+    }
     // for the form without modal button
-    .appearance-form-padding {
-        margin: 5px -15px 20px;
+    .tile-avatar-and-fullname {
+        margin: 0;
+        padding: 0 0 !important;
+
+        .tile-fullname {
+            padding: 50px 20px;
+        }
     }
 
 }

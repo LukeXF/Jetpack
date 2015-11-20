@@ -211,7 +211,7 @@ class Login extends siteFunctions
                 if ($this->databaseConnection()) {
 
                     // get real token from database (and all other data)
-                    $sth = $this->db_connection->prepare("SELECT user_id, user_name, user_email, user_first_name, user_last_name FROM users WHERE user_id = :user_id
+                    $sth = $this->db_connection->prepare("SELECT user_id, user_name, user_email, user_first_name, user_last_name, user_avatar FROM users WHERE user_id = :user_id
                                                       AND user_rememberme_token = :user_rememberme_token AND user_rememberme_token IS NOT NULL");
                     // prepared statement for the user id from the cookie
                     $sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
@@ -235,6 +235,9 @@ class Login extends siteFunctions
                         $_SESSION['user_first_name'] = $result_row->user_first_name;
                         $_SESSION['user_last_name'] = $result_row->user_last_name;
                         $_SESSION['user_logged_in'] = 1;
+                        if ($result_row->user_avatar != null) {
+                            $_SESSION['user_avatar'] = 1;
+                        }
 
                         // declare user id, set the login status to true
                         $this->user_id = $result_row->user_id;
@@ -343,6 +346,9 @@ class Login extends siteFunctions
                 $_SESSION['user_first_name'] = $result_row->user_first_name;
                 $_SESSION['user_last_name'] = $result_row->user_last_name;
                 $_SESSION['user_logged_in'] = 1;
+                if ($result_row->user_avatar != null) {
+                    $_SESSION['user_avatar'] = 1;
+                }
 
                 // declare user id, set the login status to true (this->value is used as result_row in other functions)
                 $this->user_id = $result_row->user_id;
