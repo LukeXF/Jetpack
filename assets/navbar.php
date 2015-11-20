@@ -8,7 +8,7 @@
 			</a>
 
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<img class="nav-image" src="<?php echo $avatar ?>">
+				<img class="nav-image" src="<?php echo $grav_url ?>">
 			</button>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
@@ -23,8 +23,9 @@
 							<?php echo $_SESSION['user_first_name']; ?>
 							<?php echo $_SESSION['user_last_name']; ?>
 							(<?php echo $_SESSION['user_name']; ?>)
+							<i>Account</i>
 							<span class="caret"></span>
-							<img class="nav-image" src="<?php echo $avatar ?>"></a>
+							<img class="nav-image" src="<?php echo $grav_url ?>"></a>
 
 						<ul class="dropdown-menu" role="menu">
 							<li><a href="<?php echo $siteFunctions->url("settings"); ?>">Account Overview</a></li>

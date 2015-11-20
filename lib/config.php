@@ -28,7 +28,7 @@
 
 		$tidyLinks = true; // display .php extensions
 		// $domain = "http://" . $_SERVER['SERVER_NAME'] . ""; // the actual domain this site runs off
-		$domain = "http://" . $_SERVER['SERVER_NAME'] . ":8888/vsDashboard/"; // the actual domain this site runs off
+		$domain = "http://" . $_SERVER['SERVER_NAME'] . ":8888/PayPalPayments/"; // the actual domain this site runs off
 
 
 		$config = array(

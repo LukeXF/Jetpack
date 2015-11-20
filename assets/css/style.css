@@ -133,9 +133,6 @@ nav {
     padding-top: 25px;
     padding-bottom: 25px;
     font-size: 18px; }
-  nav .navbar-nav .active a, nav .navbar-nav .active a:hover, nav .navbar-nav .active a:focus {
-    background-color: transparent !important;
-    font-weight: bold; }
   nav .navbar-brand {
     padding: 0;
     margin: 10px; }
@@ -170,25 +167,11 @@ nav {
   margin: 25px auto; }
   .select-tab .form-btn-center .btn {
     padding: 10px 50px; }
-.select-tab .tile-dark, .select-tab .tile-image {
+.select-tab .tile-dark {
   background-color: #F7F7F7;
   border-left: 1px solid #eee; }
-.select-tab .tile-image {
-  border: 1px solid #eee;
-  padding: 20px; }
-  .select-tab .tile-image img {
-    width: 80px; }
-.select-tab .tile-avatar-and-fullname {
-  margin: 0;
-  padding: 0 0 !important; }
-  .select-tab .tile-avatar-and-fullname .tile-fullname {
-    padding: 50px 20px; }
-    .select-tab .tile-avatar-and-fullname .tile-fullname label {
-      margin-bottom: -10px; }
-    .select-tab .tile-avatar-and-fullname .tile-fullname select {
-      border-radius: 0px;
-      padding: 10px 8px;
-      height: 42px; }
+.select-tab .appearance-form-padding {
+  margin: 5px -15px 20px; }
 
 .modal {
   overflow-y: auto; }
@@ -211,51 +194,8 @@ nav {
       margin: 0 0 10px;
       padding: 21px 0 0;
       text-align: right; }
-    .modal .modal-body .flag-icon {
-      border-radius: 2px; }
-  .modal .modal-lg .modal-content {
-    max-width: none; }
 
 .modal-open {
   overflow: auto; }
-
-.tile-weather {
-  border-right: 1px solid #ccc; }
-  .tile-weather ul {
-    padding: 0px; }
-    .tile-weather ul li {
-      display: block;
-      margin: 10px auto; }
-      .tile-weather ul li .weather-padding {
-        padding: 20px 10px;
-        background-color: #fff; }
-        .tile-weather ul li .weather-padding :first-of-type {
-          text-align: center; }
-        .tile-weather ul li .weather-padding h3 {
-          margin: 0;
-          margin-top: 5px; }
-        .tile-weather ul li .weather-padding h4 {
-          margin: 0; }
-          .tile-weather ul li .weather-padding h4 i {
-            font-size: 15px; }
-        .tile-weather ul li .weather-padding h5 {
-          margin: 0;
-          opacity: 0.7; }
-        .tile-weather ul li .weather-padding .wi {
-          float: right;
-          font-size: 36px; }
-
-.tile {
-  border: 1px solid #ccc; }
-  .tile .tile-padding {
-    padding: 20px; }
-  .tile .table th {
-    font-weight: bold; }
-  .tile .table td {
-    vertical-align: inherit; }
-    .tile .table td img {
-      max-height: 40px;
-      border-radius: 50px;
-      margin-right: 5px; }
 
 /*# sourceMappingURL=style.css.map */

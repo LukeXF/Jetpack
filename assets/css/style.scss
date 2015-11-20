@@ -190,25 +190,16 @@ nav {
         border-radius: 50px;
     }
 
-    .navbar-nav {
-        > li > a {
-            padding-top: 25px;
-            padding-bottom: 25px;
-            font-size: 18px;
-        }
-        .active {
-            a, a:hover, a:focus {
-                background-color: transparent !important;
-                font-weight: bold;
-            }
-        }
+    .navbar-nav > li > a {
+        padding-top: 25px;
+        padding-bottom: 25px;
+        font-size: 18px;
     }
 
     .navbar-brand {
         padding: 0;
         margin: 10px;
     }
-
 }
 
 // dashboard menu styling
@@ -281,33 +272,9 @@ nav {
         border-left: 1px solid #eee;
     }
 
-    .tile-image {
-        @extend .tile-dark;
-        border: 1px solid #eee;
-        padding: 20px;
-
-        img {
-            width: 80px;
-        }
-    }
     // for the form without modal button
-    .tile-avatar-and-fullname {
-        margin: 0;
-        padding: 0 0 !important;
-
-        .tile-fullname {
-            padding: 50px 20px;
-
-            label {
-                margin-bottom: -10px;
-            }
-
-            select {
-                border-radius: 0px;
-                padding: 10px 8px;
-                height: 42px;
-            }
-        }
+    .appearance-form-padding {
+        margin: 5px -15px 20px;
     }
 
 }
@@ -344,87 +311,10 @@ nav {
             padding: 21px 0 0;
             text-align: right;
         }
-
-        .flag-icon {
-            border-radius: 2px;
-        }
-    }
-
-    .modal-lg {
-        .modal-content {
-            max-width: none;
-
-        }
     }
 
 }
 
 .modal-open {
     overflow: auto;
-}
-
-
-.tile-weather {
-
-    border-right: 1px solid #ccc;
-    ul {
-        padding: 0px;
-
-        li {
-            display: block;
-            margin: 10px auto;
-
-            .weather-padding {
-                padding: 20px 10px;
-                background-color: #fff;
-
-                :first-of-type {
-                    text-align: center;
-                }
-                h3 {
-                    margin: 0;
-                    margin-top: 5px;
-                }
-                h4 {
-                    margin: 0;
-                    i {
-                        font-size: 15px;
-                    }
-                }
-                h5 {
-                    margin: 0;
-                    opacity: 0.7;
-                }
-                .wi {
-                    float: right;
-                    font-size: 36px;
-                }
-            }
-        }
-    }
-}
-
-.tile {
-    border: 1px solid #ccc;
-
-    & .tile-padding {
-        padding: 20px;
-    }
-
-    .table {
-        th {
-            font-weight: bold;
-        }
-
-        td {
-            vertical-align: inherit;
-            img {
-                max-height: 40px;
-                border-radius: 50px;
-                margin-right: 5px;
-            }
-        }
-    }
-
-
 }

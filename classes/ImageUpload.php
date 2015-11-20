@@ -8,9 +8,6 @@
  */
 class ImageUpload extends siteFunctions
 {
-    private $upload_dir = "assets/img/avatars_backend";
-    public $large_image_prefix = "resize_";
-    public $thumb_image_prefix = "avatar_";
 
     public function displayUpload() {
 
@@ -24,17 +21,17 @@ class ImageUpload extends siteFunctions
         // right now the random key (file names) are going off the session id, but timestamp can be used instead
         if (!isset($_SESSION['avatar']['random_key']) || strlen($_SESSION['avatar']['random_key'])==0){
             $_SESSION['avatar']['random_key'] = $_SESSION['user_id']; //assign the timestamp to the session variable
-            $_SESSION['avatar']['user_file_ext'] = "";
+            $_SESSION['avatar']['user_file_ext']= "";
         }
 
 
         // editable options
-        $upload_dir = $this->upload_dir;                                 				// The directory for the images to be saved in
-        $upload_path = $upload_dir."/";				                                    // The path to where the image will be saved
-        $large_image_prefix = $this->large_image_prefix;                       			// The prefix name to large image
-        $thumb_image_prefix = $this->thumb_image_prefix;                     			// The prefix name to the thumb image
-        $large_image_name = $large_image_prefix.$_SESSION['avatar']['random_key'];      // New name of the large image (append the timestamp to the filename)
-        $thumb_image_name = $thumb_image_prefix.$_SESSION['avatar']['random_key'];      // New name of the avatar image (append the timestamp to the filename)
+        $upload_dir = "assets/img/avatars_backend"; 				// The directory for the images to be saved in
+        $upload_path = $upload_dir."/";				// The path to where the image will be saved
+        $large_image_prefix = "resize_"; 			// The prefix name to large image
+        $thumb_image_prefix = "avatar_";			// The prefix name to the thumb image
+        $large_image_name = $large_image_prefix.$_SESSION['avatar']['random_key'];     // New name of the large image (append the timestamp to the filename)
+        $thumb_image_name = $thumb_image_prefix.$_SESSION['avatar']['random_key'];     // New name of the avatar image (append the timestamp to the filename)
         $max_file = "3"; 							// Maximum file size in MB
         $max_width = "500";							// Max width allowed for the large image
         $thumb_width = "100";						// Width of avatar image
@@ -156,7 +153,7 @@ class ImageUpload extends siteFunctions
                 }
 
                 // refresh the page to show the new uploaded image
-                $this->callback("settings", "uploadscreen");
+                $this->callback("settings");
                 exit("Refresh the page to show the new uploaded image");
             }
         }
@@ -180,7 +177,7 @@ class ImageUpload extends siteFunctions
             //Scale the image to the thumb_width set above
             $scale = $thumb_width/$w; // usually 100 divided by new amount
             $this->resizeThumbnailImage($thumb_image_location, $large_image_location,$w,$h,$x1,$y1,$scale);
-            $this->callback("settings", "uploadscreen");
+            $this->callback("settings");
             exit("view the avatar");
         }
 
@@ -205,9 +202,14 @@ class ImageUpload extends siteFunctions
 
 
 
-        // if thumbnail was just created
+
         if(strlen($large_photo_exists)>0 && strlen($thumb_photo_exists)>0){
-            $this->saveLocationToDatabase($_SESSION['user_id'] . $_SESSION['avatar']['user_file_ext']);
+            echo $thumb_photo_exists;
+            echo "<p><a href=\"".$_SERVER["PHP_SELF"]."?a=delete&t=".$_SESSION['avatar']['random_key'].$_SESSION['avatar']['user_file_ext']."\">Delete images</a></p>";
+            echo "<p><a href=\"".$_SERVER["PHP_SELF"]."\">Upload another</a></p>";
+            //Clear the time stamp session and user file extension
+
+            $this->saveLocationToDatabase($thumb_image_name.$_SESSION['avatar']['user_file_ext']);
             $this->callback("settings");
 
 
@@ -219,40 +221,36 @@ class ImageUpload extends siteFunctions
         }else{
             if(strlen($large_photo_exists)>0){
                 echo '
-                    <div class="col-md-12">
-                        <p>Now you\'ve uploaded your avatar, click and drag on your avatar to select your finalised square avatar. You can preview it on the right hand side.</p>
-                        <div align="center">
-                            <img src="' . $upload_path.$large_image_name . $_SESSION['avatar']['user_file_ext'] . '" style="float: left;" id="avatar" alt="Create Thumbnail" />
-                            <div style="border:1px #e5e5e5 solid; float:left; position:relative; overflow:hidden; width: ' . $thumb_width . 'px; height: ' . $thumb_height . 'px;">
-                                <img src="' . $upload_path.$large_image_name . $_SESSION['avatar']['user_file_ext'] . '" style="position: relative;" alt="Thumbnail Preview" />
-                            </div>
-                            <br style="clear:both;"/>
-                            <form name="avatar" action="' . $_SERVER["PHP_SELF"] . '?request=uploadscreen" method="post">
-                                <input type="hidden" name="x1" value="" id="x1" />
-                                <input type="hidden" name="y1" value="" id="y1" />
-                                <input type="hidden" name="x2" value="" id="x2" />
-                                <input type="hidden" name="y2" value="" id="y2" />
-                                <input type="hidden" name="w" value="" id="w" />
-                                <input type="hidden" name="h" value="" id="h" />
-                                <div class="form-btn" style="text-align: left">
-                                    <button type="submit" class="btn btn-default" name="upload_avatar" value="Save Thumbnail" id="save_thumb" >Save Avatar</button>
-                                </div>
-                            </form>
+                    <p>Now you\'ve uploaded your avatar, click and drag on your avatar to select your finalised square avatar. You can preview it on the right hand side.</p>
+                    <div align="center">
+                        <img src="' . $upload_path.$large_image_name . $_SESSION['avatar']['user_file_ext'] . '" style="float: left; margin-right: 10px;" id="avatar" alt="Create Thumbnail" />
+                        <div style="border:1px #e5e5e5 solid; float:left; position:relative; overflow:hidden; width: ' . $thumb_width . 'px; height: ' . $thumb_height . 'px;">
+                            <img src="' . $upload_path.$large_image_name . $_SESSION['avatar']['user_file_ext'] . '" style="position: relative;" alt="Thumbnail Preview" />
                         </div>
-                    </div>
-                ';
-            } else {
-                echo '
-                    <div class="col-md-12">
-                        <form name="photo" enctype="multipart/form-data" action="?request=uploadscreen" method="post">
-                            You can upload your own avatar as long as the image is under ' . $max_file . 'mb, once submitted you will have the ability to crop the image before saving.
-                            <input type="file" name="image" size="30" />
-                            <input type="text" hidden value="hidden" name="isupload" />
-                            <div class="form-btn">
-                                <button type="submit" class="btn btn-default" name="upload" value="Upload">Upload New Avatar</button>
+                        <br style="clear:both;"/>
+                        <form name="avatar" action="' . $_SERVER["PHP_SELF"] . '" method="post">
+                            <input type="hidden" name="x1" value="" id="x1" />
+                            <input type="hidden" name="y1" value="" id="y1" />
+                            <input type="hidden" name="x2" value="" id="x2" />
+                            <input type="hidden" name="y2" value="" id="y2" />
+                            <input type="hidden" name="w" value="" id="w" />
+                            <input type="hidden" name="h" value="" id="h" />
+                            <div class="form-btn" style="text-align: left">
+                                <button type="submit" class="btn btn-default" name="upload_avatar" value="Save Thumbnail" id="save_thumb" >Save Avatar</button>
                             </div>
                         </form>
                     </div>
+                    <hr />
+                ';
+            } else {
+                echo '
+                    <form name="photo" enctype="multipart/form-data" action="' . $_SERVER["PHP_SELF"] . '" method="post">
+                        You can upload your own avatar as long as the image is under ' . $max_file . 'mb, once submitted you will have the ability to crop the image before saving.
+                        <input type="file" name="image" size="30" />
+                        <div class="form-btn">
+                            <button type="submit" class="btn btn-default" name="upload" value="Upload">Upload New Avatar</button>
+                        </div>
+                    </form>
                 ';
             }
         }
@@ -318,11 +316,8 @@ class ImageUpload extends siteFunctions
         if (file_exists($thumb_image_location)) {
             unlink($thumb_image_location);
         }
-
-        $this->saveLocationToDatabase("", true);
-
         $this->callback("settings");
-        exit("Refresh the page, your avatar has been deleted");
+        exit();
     }
 
     private function resizeImage($image,$width,$height,$scale) {
@@ -418,42 +413,24 @@ class ImageUpload extends siteFunctions
         return $width;
     }
 
-    private function saveLocationToDatabase($filename, $delete = false){
+    private function saveLocationToDatabase($filename){
         global $_SESSION;
 
         if ($this->databaseConnection()) {
 
-            // if the filename
-            if ($delete == true) {
-                $sql = $this->db_connection->prepare('UPDATE `users` SET `user_avatar` = null WHERE `user_id` = :user_id');
-                $sql->bindValue(':user_id',      		$_SESSION['user_id']		, PDO::PARAM_INT);
+            $sql = $this->db_connection->prepare('UPDATE `users` SET `user_avatar` = :filename WHERE `user_id` = :user_id');
 
-                // execute the Instagram save and check response
-                if ($sql->execute()) {
-                    unset($_SESSION['avatar']);
-                    $_SESSION['user_avatar'] = 1;
+            $sql->bindValue(':filename',         	$filename			        , PDO::PARAM_STR);
+            $sql->bindValue(':user_id',      		$_SESSION['user_id']		, PDO::PARAM_INT);
 
-                    unset($_SESSION['user_avatar']);
-                    return true;
-                } else {
-                    return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", unable to delete avatar location from database - please contact support." , "danger");
-                }
-
+            // execute the Instagram save and check response
+            if ($sql->execute()) {
+                unset($_SESSION['avatar']);
+                $_SESSION['user_avatar'] = 1;
+                return $this->callbackMessage("Your avatar has now been set.", "success");
             } else {
-                $sql = $this->db_connection->prepare('UPDATE `users` SET `user_avatar` = :filename WHERE `user_id` = :user_id');
-                $sql->bindValue(':filename',         	$filename			        , PDO::PARAM_STR);
-                $sql->bindValue(':user_id',      		$_SESSION['user_id']		, PDO::PARAM_INT);
-
-                // execute the Instagram save and check response
-                if ($sql->execute()) {
-                    unset($_SESSION['avatar']);
-                    $_SESSION['user_avatar'] = 1;
-                    return $this->callbackMessage("Your avatar has now been set.", "success");
-                } else {
-                    return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", please contact support." , "danger");
-                }
+                return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", please contact support." , "danger");
             }
-
 
         } else {
 
@@ -474,87 +451,15 @@ class ImageUpload extends siteFunctions
             // fetch all from the widget
             $sql = $sql->fetchAll();
 
-            // $this->debug($sql);
+            //$this->debug($sql);
 
-            if ( isset($sql[0]['user_avatar']) ) {
-                return $sql[0]['user_avatar'];
-            } else {
-                return false;
-            }
+            return $sql[0]['user_avatar'];
 
         } else {
 
             return false;
 
         }
-    }
-
-    public function displayCurrentAvatar($user_name, $noimageset = false){
-
-        global $domain;
-        global $_SESSION;
-        $url = $domain . "assets/img/avatar.php?pic=" . $user_name;
-
-
-        // if delete is present and random key (user_id) is more than 0
-        if (isset($_GET['a']) && $_GET['a']=="delete" && strlen($_GET['t'])>0){
-            $this->deleteImage($this->upload_dir . "/" . $this->large_image_prefix . $_GET['t'], $this->upload_dir . "/" . $this->thumb_image_prefix . $_GET['t']);
-        }
-
-        if ($noimageset) {
-            echo "
-            <div class='col-md-12'>
-                <p>You have yet to submit your own avatar, you can use our default one, your gravatar or upload your own. Use the drop down menu to change your appearance.</p>
-             </div>";
-        } else {
-            echo "
-            <div class='col-md-12'>
-                <p>You have set your own avatar, you can either submit a new one or remove it.</p>
-             </div>";
-        }
-
-        echo "
-            <div class='col-md-6'>
-                <div class='tile-image'>
-                    <div class='row'>
-                        <div class='col-md-4 col-xs-2' style='padding-right: 0;'>
-                             <img src='" . $url . "' class='img-circle' style='width:100%'>
-                             </div>
-
-                        <div class='col-md-8 col-xs-10'>
-                            <b>Site Avatar:</b><br>
-        ";
-
-        if ($noimageset) {
-            echo "<span>You have not uploaded an image to the site, therefore a default is set.<br>
-                             <a href='?request=uploadscreen'>Upload your own avatar</a></span>";
-        } else {
-            echo "<span>This is your avatar you have uploaded to this site.<br>
-                             <a href='?a=delete&t=" . $this->getUsersAvatar($_SESSION['user_name']) . "'>remove / upload another</a></span>";
-        }
-        echo "
-
-                        </div>
-                    </div>
-                 </div>
-            </div>
-
-
-            <div class='col-md-6'>
-                <div class='tile-image'>
-                    <div class='row'>
-                        <div class='col-md-4 col-xs-2' style='padding-right: 0;'>
-                             <img src='" . $this->getGravatar($_SESSION['user_email']) . "' class='img-circle' style='width:100%'>
-                             </div>
-
-                        <div class='col-md-8 col-xs-10'>
-                            <b>Gravatar:</b><br>
-                             <span>This is your avatar loaded from the <a href='https://en.gravatar.com/' target='_blank'>Gravatar</a> system. You can change it on their website.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            ";
     }
 
 

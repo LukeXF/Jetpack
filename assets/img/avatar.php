@@ -2,6 +2,7 @@
 if(isset($_GET['pic']))
 {
 
+
     // load classes
     require_once('../../lib/config.php');
     require_once('../../classes/siteFunctions.php');
@@ -15,20 +16,22 @@ if(isset($_GET['pic']))
 
 
     if ($pic == false) {
-        $pic = imagecreatefromjpeg('avatars_backend/logo.jpg');
-        // $size = getimagesize($pic);
-        header('Content-Type: image/jpeg');
-
-        imagejpeg($pic);
-        imagedestroy($pic);
-
+        $pic = "avatars_backend/logo.png";
     } else {
-        $pic = 'avatars_backend/' . $imageUpload->thumb_image_prefix . $pic;
-        $size = getimagesize($pic);
-        header('Content-Type: ' . $size['mime']);
+        $pic = 'avatars_backend/' . $pic;
     }
+    // only strip slashes if magic quotes is enabled.
 
-    // $siteFunctions->debug($size);
+    //Change this to the correct path for your file on the server.
+
+    //This will get info about the image, including the mime type.
+    //The function is called getimagesize(), which is misleading
+    //because it does much more than that.
+    $size = getimagesize($pic);
+
+    //Now that you know the mime type, include it in the header.
+    header('Content-type: '.$size['mime']);
+
     //Read the image and send it directly to the output.
     readfile($pic);
 }

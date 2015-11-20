@@ -53,7 +53,7 @@ class siteFunctions
 			} catch (PDOException $e) {
 
 				// If an error is catched, database connection failed
-				$this->callbackMessage(	$e->getMessage(), "danger");
+				$this->errors[] = "Database connection problem.";
 
 				// return false :(
 				return false;
@@ -158,7 +158,7 @@ class siteFunctions
 		<a class='profile' href='" . $GLOBALS['domain'] . "user/" . $userTag_username . "'>
 			By&nbsp;&nbsp;
 			<h4 class='animate'>
-			<img src='" . $this->getAvatar($userTag_email) . "'>
+			<img src='" . $this->get_gravatar($userTag_email) . "'>
 			" . $userTag_username  . "
 			</h4>
 		</a>";
@@ -176,22 +176,16 @@ class siteFunctions
 		if ($this->databaseConnection()) {
 
 			// if you want to search by ID
-			if ($searchByID == "id") {
+			if ($searchByID) {
 				// database query, getting all the info of the selected user
-				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`, `user_display_avatar`
+				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`
 														FROM `users`
 														WHERE `user_id` = :username");
-			} elseif ($searchByID == "email") {
-				// database query, getting all the info of the selected user
-				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`, `user_display_avatar`
-														FROM `users`
-														WHERE `user_email` = :username");
 			} else {
 				// database query, getting all the info of the selected user
-				$query_user = $this->db_connection->prepare("SELECT *
+				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`
 														FROM `users`
-														WHERE `user_id` = :username OR `user_email` = :username");
-
+														WHERE `user_name` = :username OR `user_email` = :username");
 			}
 
 			// prepared statement for the username
@@ -202,19 +196,11 @@ class siteFunctions
 			// get result row (as an object)
 			return $query_user->fetchObject();
 
-
 		} else {
 
 			// if connection issues
 			return false;
 		}
-	}
-
-	/*
-	 * used to return all data relating to a user
-	 */
-	public function getAllUserData($user_id){
-		return $this->getUserData($user_id);
 	}
 
 
@@ -223,32 +209,15 @@ class siteFunctions
 	{
 		// search by user ID to get the returned object of the user data
 		// the true is set to search by ID and not username or email
-		if ($this->getUserData($username, "id") != false) {
+		if ($this->getUserData($username, true) != false) {
 
 			// output the desired user data
-			return $this->getUserData($username, "id")->$info;
+			return $this->getUserData($username, true)->$info;
 
 		} else {
 
 			// If there is no error, output the the error function
-			$this->callbackMessage('No user found', "danger");
-		}
-	}
-
-	// Get User from ID (used in the news system and other database queries)
-	public function getUserDataFromEmail($username, $info = "user_name")
-	{
-		// search by user ID to get the returned object of the user data
-		// the true is set to search by ID and not username or email
-		if ($this->getUserData($username, "email") != false) {
-
-			// output the desired user data
-			return $this->getUserData($username, "email")->$info;
-
-		} else {
-
-			// If there is no error, output the the error function
-			$this->callbackMessage("user " . $username . " was not found.", "danger");
+			$this->error('No user found');
 		}
 	}
 
@@ -295,7 +264,7 @@ class siteFunctions
 							echo "<a class='profile animateAll' href='" . $GLOBALS['domain'] . "user/" . $latestUsers[$i]['user_name'] . "'>";
 
 							// set variable for the users profile picture
-							$gravImg = $this->getAvatar($latestUsers[$i]['user_email']);
+							$gravImg = $this->get_gravatar($latestUsers[$i]['user_email']);
 
 							// echo out the image
 							echo "<div class='recently_registered'
@@ -334,71 +303,23 @@ class siteFunctions
 
 
 	// debug function for error logging
-	public function debug($array = false, $nameOfArray = false) {
+	public function debug($array) {
 
-		if ($array == false) {
-			// echo out html fomratting
-			echo "<pre>";
-			// print the array in an easy to read format
-			print_r("<b>POST ARRAY:</b><br>");
-			print_r($_POST);
-			print_r("<b>SESSION ARRAY:</b><br>");
-			print_r($_SESSION);
-			print_r("<b>GET ARRAY:</b><br>");
-			print_r($_GET);
-			// echo out close html formatting
-			echo "</pre>";
-		} else {
-			// echo out html fomratting
-			echo "<pre>";
-
-			if ($nameOfArray == true) {
-				print_r("<b>" . $nameOfArray . ":</b><br>");
-			}
-			// print the array in an easy to read format
-			print_r($array);
-			// echo out close html formatting
-			echo "</pre>";
-		}
-	}
-
-
-
-	// load the gravatar image for a defined email address
-	public function getAvatar($email = false, $size = 80)
-	{
-		global $_SESSION;
-
-		if ($email == false) {
-
-			// assume they want SESSION avatar if no email is defined
-			if ($_SESSION['user_display_avatar'] == "Site Avatar") {
-				return $this->url("assets/img/avatar", array("pic" => $_SESSION['user_name']));
-			} else {
-				return $this->getGravatar($_SESSION['user_email'], $size);
-			}
-
-		} else {
-
-			// return for things like user lists
-			if ($this->getUserDataFromEmail($email, "user_display_avatar") == "Site Avatar") {
-
-				$username = $this->getUserDataFromEmail($email, "user_name");
-				return $this->url("assets/img/avatar", array("pic" => $username));
-
-			} else {
-				return $this->getGravatar($email, $size);
-			}
-
-		}
+		// echo out html fomratting
+		echo "<pre>";
+		// print the array in an easy to read format
+		print_r($array);
+		// echo out close html formatting
+		echo "</pre>";
 	}
 
 
 
 
 
+
 	// load the gravatar image for a defined email address
-	public function getGravatar($email, $size = 200)
+	public function get_gravatar($email, $size = 80)
 	{
 
 
@@ -432,10 +353,13 @@ class siteFunctions
 
 
 
+
+
+
 	// a simple function to detect if on localhost or now
 	private function detectLocalhost()
 	{
-		global $_SERVER;
+
 		// tell the function that theses are the localhost names
 		$localhost = array('127.0.0.1', '::1', 'localhost');
 
@@ -661,7 +585,7 @@ class siteFunctions
 
 
 
-	public function navbar($denavbar, $image = false, $pageQueryLinks = false){
+	function navbar($denavbar, $image = false, $pageQueryLinks = false){
 		global $activeTab;
 		$i = 0;
 		foreach($denavbar as $x => $x_value) {
@@ -717,7 +641,7 @@ class siteFunctions
      *  Outputs a human time ago string rather than numbered time
      *
     **/
-    public function timeAgo($ptime, $isMySQLDate = true){  // Past time as MySQL DATETIME value
+    function timeAgo($ptime, $isMySQLDate = true){  // Past time as MySQL DATETIME value
 
 
 		if ($isMySQLDate) {
@@ -770,214 +694,11 @@ class siteFunctions
         }
     }
 
-	public function clean($string) {
+	function clean($string) {
 		$string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
 		$string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
 		return preg_replace('/-+/', ' ', $string); // Replaces multiple hyphens with single one.
 	}
-
-	public function ip_info($ip = NULL, $purpose = "location", $deep_detect = TRUE) {
-
-		if($ip == "127.0.0.1" || $ip == "localhost" || $ip == "::1") {
-			return "localhost";
-		}
-
-		$output = NULL;
-		if (filter_var($ip, FILTER_VALIDATE_IP) === FALSE) {
-			$ip = $_SERVER["REMOTE_ADDR"];
-			if ($deep_detect) {
-				if (filter_var(@$_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP))
-					$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-				if (filter_var(@$_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP))
-					$ip = $_SERVER['HTTP_CLIENT_IP'];
-			}
-		}
-		$purpose    = str_replace(array("name", "\n", "\t", " ", "-", "_"), NULL, strtolower(trim($purpose)));
-		$support    = array("country", "countrycode", "state", "region", "city", "location", "address");
-		$continents = array(
-			"AF" => "Africa",
-			"AN" => "Antarctica",
-			"AS" => "Asia",
-			"EU" => "Europe",
-			"OC" => "Australia (Oceania)",
-			"NA" => "North America",
-			"SA" => "South America"
-		);
-		if (filter_var($ip, FILTER_VALIDATE_IP) && in_array($purpose, $support)) {
-			$ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $ip));
-
-			if (@strlen(trim($ipdat->geoplugin_countryCode)) == 2) {
-				switch ($purpose) {
-					case "location":
-						$output = array(
-							"city"           => @$ipdat->geoplugin_city,
-							"state"          => @$ipdat->geoplugin_regionName,
-							"country"        => @$ipdat->geoplugin_countryName,
-							"country_code"   => @$ipdat->geoplugin_countryCode,
-							"continent"      => @$continents[strtoupper($ipdat->geoplugin_continentCode)],
-							"continent_code" => @$ipdat->geoplugin_continentCode
-						);
-						break;
-					case "address":
-						$address = array($ipdat->geoplugin_countryName);
-						if (@strlen($ipdat->geoplugin_regionName) >= 1)
-							$address[] = $ipdat->geoplugin_regionName;
-						if (@strlen($ipdat->geoplugin_city) >= 1)
-							$address[] = $ipdat->geoplugin_city;
-						$output = implode(", ", array_reverse($address));
-						break;
-					case "city":
-						$output = @$ipdat->geoplugin_city;
-						break;
-					case "state":
-						$output = @$ipdat->geoplugin_regionName;
-						break;
-					case "region":
-						$output = @$ipdat->geoplugin_regionName;
-						break;
-					case "country":
-						$output = @$ipdat->geoplugin_countryName;
-						break;
-					case "countrycode":
-						$output = @$ipdat->geoplugin_countryCode;
-						break;
-				}
-			}
-		}
-		return $output;
-	}
-
-	public function getBrowser($agent = null)
-	{
-
-		if ( empty($agent) ) {
-			global $_SERVER;
-			$agent = $_SERVER['HTTP_USER_AGENT'];
-		}
-
-		if ( stripos($agent, 'Firefox') !== false ) {
-			$browser['browser'] = 'firefox';
-		} elseif ( stripos($agent, 'MSIE') !== false ) {
-			$browser['browser'] = 'ie';
-		} elseif ( stripos($agent, 'Trident') !== false ) {
-			$browser['browser'] = 'ie';
-		} elseif ( stripos($agent, 'iPad') !== false ) {
-			$browser['browser'] = 'ipad';
-		} elseif ( stripos($agent, 'Android') !== false ) {
-			$browser['browser'] = 'android';
-		} elseif ( stripos($agent, 'Chrome') !== false ) {
-			$browser['browser'] = 'chrome';
-		} elseif ( stripos($agent, 'Safari') !== false ) {
-			$browser['browser'] = 'safari';
-		} elseif ( stripos($agent, 'AIR') !== false ) {
-			$browser['browser'] = 'air';
-		} elseif ( stripos($agent, 'Fluid') !== false ) {
-			$browser['browser'] = 'fluid';
-		}
-
-		if ( stripos($agent, 'Firefox') !== false ) {
-			$browser['icon'] = 'globe';
-		} elseif ( stripos($agent, 'MSIE') !== false ) {
-			$browser['icon'] = 'globe';
-		} elseif ( stripos($agent, 'Trident') !== false ) {
-			$browser['icon'] = 'globe';
-		} elseif ( stripos($agent, 'iPad') !== false ) {
-			$browser['icon'] = 'globe';
-		} elseif ( stripos($agent, 'Android') !== false ) {
-			$browser['icon'] = 'globe';
-		} elseif ( stripos($agent, 'Chrome') !== false ) {
-			$browser['icon'] = 'globe';
-		} elseif ( stripos($agent, 'Safari') !== false ) {
-			$browser['icon'] = 'globe';
-		} elseif ( stripos($agent, 'AIR') !== false ) {
-			$browser['icon'] = 'globe';
-		} elseif ( stripos($agent, 'Fluid') !== false ) {
-			$browser['icon'] = 'globe';
-		}
-
-		return $browser;
-	}
-
-	function getOS($agent = null) {
-
-
-		if ( empty($agent) ) {
-			global $_SERVER;
-			$agent = $_SERVER['HTTP_USER_AGENT'];
-		}
-
-
-		$os_array       =   array(
-			'/windows nt 10/i'     =>  'Windows 10',
-			'/windows nt 6.3/i'     =>  'Windows 8.1',
-			'/windows nt 6.2/i'     =>  'Windows 8',
-			'/windows nt 6.1/i'     =>  'Windows 7',
-			'/windows nt 6.0/i'     =>  'Windows Vista',
-			'/windows nt 5.2/i'     =>  'Windows Server 2003/XP x64',
-			'/windows nt 5.1/i'     =>  'Windows XP',
-			'/windows xp/i'         =>  'Windows XP',
-			'/windows nt 5.0/i'     =>  'Windows 2000',
-			'/windows me/i'         =>  'Windows ME',
-			'/win98/i'              =>  'Windows 98',
-			'/win95/i'              =>  'Windows 95',
-			'/win16/i'              =>  'Windows 3.11',
-			'/macintosh|mac os x/i' =>  'Mac OS X',
-			'/mac_powerpc/i'        =>  'Mac OS 9',
-			'/linux/i'              =>  'Linux',
-			'/ubuntu/i'             =>  'Ubuntu',
-			'/iphone/i'             =>  'iPhone',
-			'/ipod/i'               =>  'iPod',
-			'/ipad/i'               =>  'iPad',
-			'/android/i'            =>  'Android',
-			'/blackberry/i'         =>  'BlackBerry',
-			'/webos/i'              =>  'Mobile'
-		);
-		$icon_array       =   array(
-			'/windows nt 10/i'     =>  'windows',
-			'/windows nt 6.3/i'     =>  'windows',
-			'/windows nt 6.2/i'     =>  'windows',
-			'/windows nt 6.1/i'     =>  'windows',
-			'/windows nt 6.0/i'     =>  'windows',
-			'/windows nt 5.2/i'     =>  'windows',
-			'/windows nt 5.1/i'     =>  'windows',
-			'/windows xp/i'         =>  'windows',
-			'/windows nt 5.0/i'     =>  'windows',
-			'/windows me/i'         =>  'windows',
-			'/win98/i'              =>  'windows',
-			'/win95/i'              =>  'windows',
-			'/win16/i'              =>  'windows',
-			'/macintosh|mac os x/i' =>  'apple',
-			'/mac_powerpc/i'        =>  'apple',
-			'/linux/i'              =>  'linux',
-			'/ubuntu/i'             =>  'linux',
-			'/iphone/i'             =>  'apple',
-			'/ipod/i'               =>  'apple',
-			'/ipad/i'               =>  'apple',
-			'/android/i'            =>  'android',
-			'/blackberry/i'         =>  'mobile',
-			'/webos/i'              =>  'mobile'
-		);
-
-		foreach ($os_array as $regex => $value) {
-
-			if (preg_match($regex, $agent)) {
-				$os_platform['os']    =   $value;
-			}
-
-		}
-		foreach ($icon_array as $regex => $value) {
-
-			if (preg_match($regex, $agent)) {
-				$os_platform['icon']    =   $value;
-			}
-
-		}
-
-		return $os_platform;
-
-	}
-
-
 
 }
 
