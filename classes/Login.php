@@ -71,7 +71,7 @@ class Login extends siteFunctions
                 // user tries to update images or their first/last name
             } elseif (isset($_POST['user_update_appearance'])) {
 
-                $this->editAppearance($_POST['user_first_name'], $_POST['user_last_name'], $_FILES);
+                $this->editAppearance($_POST['user_first_name'], $_POST['user_last_name'], $_POST['avatar']);
             }
 
 
@@ -211,7 +211,7 @@ class Login extends siteFunctions
                 if ($this->databaseConnection()) {
 
                     // get real token from database (and all other data)
-                    $sth = $this->db_connection->prepare("SELECT user_id, user_name, user_email, user_first_name, user_last_name, user_avatar FROM users WHERE user_id = :user_id
+                    $sth = $this->db_connection->prepare("SELECT user_id, user_name, user_email, user_first_name, user_last_name, user_avatar, user_display_avatar FROM users WHERE user_id = :user_id
                                                       AND user_rememberme_token = :user_rememberme_token AND user_rememberme_token IS NOT NULL");
                     // prepared statement for the user id from the cookie
                     $sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
@@ -235,6 +235,7 @@ class Login extends siteFunctions
                         $_SESSION['user_first_name'] = $result_row->user_first_name;
                         $_SESSION['user_last_name'] = $result_row->user_last_name;
                         $_SESSION['user_logged_in'] = 1;
+                        $_SESSION['user_display_avatar'] = $result_row->user_display_avatar;
                         if ($result_row->user_avatar != null) {
                             $_SESSION['user_avatar'] = 1;
                         }
@@ -346,6 +347,7 @@ class Login extends siteFunctions
                 $_SESSION['user_first_name'] = $result_row->user_first_name;
                 $_SESSION['user_last_name'] = $result_row->user_last_name;
                 $_SESSION['user_logged_in'] = 1;
+                $_SESSION['user_display_avatar'] = $result_row->user_display_avatar;
                 if ($result_row->user_avatar != null) {
                     $_SESSION['user_avatar'] = 1;
                 }
@@ -698,28 +700,29 @@ class Login extends siteFunctions
 
 
 
-    public function editAppearance($user_first_name, $user_last_name, $files = false){
+    public function editAppearance($user_first_name, $user_last_name, $avatar_display){
 
-        $this->saveFullName($user_first_name, $user_last_name);
-        $this->saveAvatar($files);
+        $this->saveFullName($user_first_name, $user_last_name, $avatar_display);
     }
 
 
-    Private function saveFullName($user_first_name, $user_last_name) {
+    Private function saveFullName($user_first_name, $user_last_name, $avatar_display) {
         global $_SESSION;
 
         if ($this->databaseConnection()) {
 
-            $sql = $this->db_connection->prepare('UPDATE `users` SET `user_first_name` = :user_first_name, `user_last_name` = :user_last_name WHERE `user_id` = :user_id');
+            $sql = $this->db_connection->prepare('UPDATE `users` SET `user_first_name` = :user_first_name, `user_last_name` = :user_last_name, `user_display_avatar` = :user_display_avatar WHERE `user_id` = :user_id');
 
             $sql->bindValue(':user_first_name', 	$user_first_name			, PDO::PARAM_STR);
-            $sql->bindValue(':user_last_name', 	$user_last_name			, PDO::PARAM_STR);
+            $sql->bindValue(':user_last_name', 	    $user_last_name			    , PDO::PARAM_STR);
+            $sql->bindValue(':user_display_avatar', $avatar_display			    , PDO::PARAM_STR);
             $sql->bindValue(':user_id',      		$_SESSION['user_id']		, PDO::PARAM_INT);
 
             // execute the Instagram save and check response
             if ($sql->execute()) {
-                $_SESSION['user_first_name'] = $user_first_name;
-                $_SESSION['user_last_name'] = $user_last_name;
+                $_SESSION['user_first_name'] =      $user_first_name;
+                $_SESSION['user_last_name'] =       $user_last_name;
+                $_SESSION['user_display_avatar'] =  $avatar_display;
                 return $this->callbackMessage("Your first and last name has been succesfully updated", "success");
             } else {
                 return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", please contact support." , "danger");

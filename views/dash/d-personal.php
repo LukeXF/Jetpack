@@ -44,35 +44,55 @@ if (isset($registration)) {
 
 <div class="row tile">
 	<div class="row tile-avatar-and-fullname">
-		<form method="post" action="settings.php?p=personal" enctype="multipart/form-data">
 			<div class="col-md-8">
 				<div class="col-md-12">
+					<h3 style="padding-top:20px;">Edit your appearance</h3>
 					<?php $siteFunctions->displayCallbackMessage(); ?>
-					<h3>Edit your appearance</h3>
 				</div>
 				<?php
 					// if the user has an avatar already set
 					if (isset($_SESSION['user_avatar'])) {
 						$imageUpload->displayCurrentAvatar($_SESSION['user_name']);
-					} else {
+					} elseif (isset($_GET['request']) && $_GET['request'] == "uploadscreen") {
 						$imageUpload->displayUpload();
-
+					} else {
+						$imageUpload->displayCurrentAvatar($_SESSION['user_name'], true);
 					}
 				?>
 			</div>
 
 
 			<div class="col-md-4 tile-dark tile-fullname">
-				<label for="user_first_name">First Name</label>
-				<input placeholder="Your first name" id="user_first_name" value="<?php echo $_SESSION['user_first_name']; ?>" type="text" name="user_first_name" pattern="[a-zA-Z0-9]{2,64}"  />
+				<form method="post" name="user_update_appearance">
+					<label for="user_first_name">First Name</label>
+					<input placeholder="Your first name" id="user_first_name" value="<?php echo $_SESSION['user_first_name']; ?>" type="text" name="user_first_name" pattern="[a-zA-Z0-9]{2,64}"  />
 
-				<label for="user_last_name">Last Name</label>
-				<input placeholder="Your last name" id="user_last_name" value="<?php echo $_SESSION['user_last_name']; ?>" type="text" name="user_last_name" pattern="[a-zA-Z0-9]{2,64}"  />
-				<div class="form-btn">
-					<button type="submit" class="btn btn-default" name="user_update_appearance" value="Change Username" class="btn btn-default" type="submit">Save Name</button>
-				</div>
+					<label for="user_last_name">Last Name</label>
+					<input placeholder="Your last name" id="user_last_name" value="<?php echo $_SESSION['user_last_name']; ?>" type="text" name="user_last_name" pattern="[a-zA-Z0-9]{2,64}"  />
+
+					<label for="avatar">Select Avatar to display</label>
+					<select class="form-control" id="avatar" name="avatar">
+						<?php
+							$avatarOptions = array("Gravatar", "Site Avatar");
+
+							for ($x = 0; $x < count($avatarOptions); $x++) {
+
+								if ($_SESSION['user_display_avatar'] == $avatarOptions[$x]) {
+									echo "<option selected value='" . $avatarOptions[$x] . "'>" . $avatarOptions[$x] . " - (currently set)</option>";
+								} else {
+									echo "<option value='" . $avatarOptions[$x] . "'>" . $avatarOptions[$x] . "</option>";
+								}
+
+							}
+
+						?>
+					</select>
+
+					<div class="form-btn">
+						<button type="submit" class="btn btn-default" name="user_update_appearance" value="Change Username" class="btn btn-default" type="submit">Save Appearance</button>
+					</div>
+				</form>
 			</div>
-		</form>
 	</div>
 </div>
 

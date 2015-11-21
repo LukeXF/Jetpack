@@ -2,9 +2,9 @@
 
 	$navbar = array(
 		"Personal Details" 	=> array( "active" => "", "logo" => "edit",	 	 	"tooltip"=>"change your personal details", "url" => "personal"),
-		"Billing Details" 	=> array( "active" => "", "logo" => "credit-card", 	"tooltip"=>"manage your payment options", "url" => "rates"),
-		"Notifications" 	=> array( "active" => "", "logo" => "inbox", 	 	"tooltip"=>"change how we message you", "url" => "reviews"),
-		"Subscriptions" 		=> array( "active" => "", "logo" => "key", 	 	"tooltip"=>"review previous invoices", "url" => "faq")
+		"Billing Details" 	=> array( "active" => "", "logo" => "credit-card", 	"tooltip"=>"manage your payment options", "url" => "billing"),
+		"Notifications" 	=> array( "active" => "", "logo" => "inbox", 	 	"tooltip"=>"change how we message you", "url" => "notifications"),
+		"Subscriptions" 	=> array( "active" => "", "logo" => "key", 	 		"tooltip"=>"review previous invoices", "url" => "subscriptions")
 	);
 	if ( empty($_GET['p']) ) {
 		$activeTab = "personal";
@@ -15,8 +15,12 @@
 	if (!empty($_GET['p'])) {
 		if ($_GET['p'] == 'personal'){
 			$select_tab = 'views/dash/d-personal.php';
-		} elseif ($_GET['p'] == 'rates'){
+		} elseif ($_GET['p'] == 'billing'){
 			$select_tab = 'views/dash/d-billing.php';
+		} elseif ($_GET['p'] == 'notifications'){
+			$select_tab = 'views/dash/d-notifications.php';
+		} elseif ($_GET['p'] == 'subscriptions'){
+			$select_tab = 'views/dash/d-subscriptions.php';
 		} else {
 			$select_tab = 'views/dash/d-personal.php';
 		}

@@ -158,7 +158,7 @@ class siteFunctions
 		<a class='profile' href='" . $GLOBALS['domain'] . "user/" . $userTag_username . "'>
 			By&nbsp;&nbsp;
 			<h4 class='animate'>
-			<img src='" . $this->get_gravatar($userTag_email) . "'>
+			<img src='" . $this->getAvatar($userTag_email) . "'>
 			" . $userTag_username  . "
 			</h4>
 		</a>";
@@ -264,7 +264,7 @@ class siteFunctions
 							echo "<a class='profile animateAll' href='" . $GLOBALS['domain'] . "user/" . $latestUsers[$i]['user_name'] . "'>";
 
 							// set variable for the users profile picture
-							$gravImg = $this->get_gravatar($latestUsers[$i]['user_email']);
+							$gravImg = $this->getAvatar($latestUsers[$i]['user_email']);
 
 							// echo out the image
 							echo "<div class='recently_registered'
@@ -315,11 +315,27 @@ class siteFunctions
 
 
 
+	// load the gravatar image for a defined email address
+	public function getAvatar($email, $size = 80)
+	{
+		global $_SESSION;
+
+		$email = $_SESSION['user_email'];
+		$size = '200';
+
+		if ($_SESSION['user_display_avatar'] == "Site Avatar") {
+			return $this->url("assets/img/avatar", array("pic" => "LukeXF" ));
+		} else {
+			return $this->getGravatar($email, $size);
+		}
+	}
+
+
 
 
 
 	// load the gravatar image for a defined email address
-	public function get_gravatar($email, $size = 80)
+	public function getGravatar($email, $size = 200)
 	{
 
 
@@ -353,13 +369,10 @@ class siteFunctions
 
 
 
-
-
-
 	// a simple function to detect if on localhost or now
 	private function detectLocalhost()
 	{
-
+		global $_SERVER;
 		// tell the function that theses are the localhost names
 		$localhost = array('127.0.0.1', '::1', 'localhost');
 

@@ -288,6 +288,16 @@ nav {
 
         .tile-fullname {
             padding: 50px 20px;
+
+            label {
+                margin-bottom: -10px;
+            }
+
+            select {
+                border-radius: 0px;
+                padding: 10px 8px;
+                height: 42px;
+            }
         }
     }
 
@@ -331,4 +341,49 @@ nav {
 
 .modal-open {
     overflow: auto;
+}
+
+
+.tile-weather {
+
+    border-right: 1px solid #ccc;
+    ul {
+        padding: 0px;
+
+        li {
+            display: block;
+            margin: 10px auto;
+
+            .weather-padding {
+                padding: 20px 10px;
+                background-color: #fff;
+
+                :first-of-type {
+                    text-align: center;
+                }
+                h3 {
+                    margin: 0;
+                    margin-top: 5px;
+                }
+                h4 {
+                    margin: 0;
+                    i {
+                        font-size: 15px;
+                    }
+                }
+                h5 {
+                    margin: 0;
+                    opacity: 0.7;
+                }
+                .wi {
+                    float: right;
+                    font-size: 36px;
+                }
+            }
+        }
+    }
+}
+
+.tile {
+    border: 1px solid #ccc;
 }

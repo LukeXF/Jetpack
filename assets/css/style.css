@@ -180,6 +180,12 @@ nav {
   padding: 0 0 !important; }
   .select-tab .tile-avatar-and-fullname .tile-fullname {
     padding: 50px 20px; }
+    .select-tab .tile-avatar-and-fullname .tile-fullname label {
+      margin-bottom: -10px; }
+    .select-tab .tile-avatar-and-fullname .tile-fullname select {
+      border-radius: 0px;
+      padding: 10px 8px;
+      height: 42px; }
 
 .modal {
   overflow-y: auto; }
@@ -205,5 +211,34 @@ nav {
 
 .modal-open {
   overflow: auto; }
+
+.tile-weather {
+  border-right: 1px solid #ccc; }
+  .tile-weather ul {
+    padding: 0px; }
+    .tile-weather ul li {
+      display: block;
+      margin: 10px auto; }
+      .tile-weather ul li .weather-padding {
+        padding: 20px 10px;
+        background-color: #fff; }
+        .tile-weather ul li .weather-padding :first-of-type {
+          text-align: center; }
+        .tile-weather ul li .weather-padding h3 {
+          margin: 0;
+          margin-top: 5px; }
+        .tile-weather ul li .weather-padding h4 {
+          margin: 0; }
+          .tile-weather ul li .weather-padding h4 i {
+            font-size: 15px; }
+        .tile-weather ul li .weather-padding h5 {
+          margin: 0;
+          opacity: 0.7; }
+        .tile-weather ul li .weather-padding .wi {
+          float: right;
+          font-size: 36px; }
+
+.tile {
+  border: 1px solid #ccc; }
 
 /*# sourceMappingURL=style.css.map */

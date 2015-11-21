@@ -7,21 +7,25 @@
 	require_once('classes/Login.php');
 	require_once('classes/Weather.php');
 	require_once('classes/ImageUpload.php');
+	require_once('classes/Payments.php');
 
 
 	// initialize classes
 	$siteFunctions = new siteFunctions();
 	$login = new Login();
-	$weather = new weather();
-	$imageUpload = new imageUpload();
 
 	if ($login->isUserLoggedIn() == true) {
+
+		$weather = new Weather();
+		$imageUpload = new imageUpload();
+		$payments = new Payments();
 
 		$navbar = array(
 			"Home" 	=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $domain),
 			"Admin" 	=> array( "active" => "", "logo" => "flaticon-id1", 		"url" => $domain . "settings")
 		);
-		$grav_url = $siteFunctions->get_gravatar($_SESSION['user_email']);
+		$avatar = $siteFunctions->getAvatar($_SESSION['user_email']);
+		// $siteFunctions->debug($_SESSION);
 
 	} else {
 
@@ -29,7 +33,6 @@
 			"Login" 	=> array( "active" => "", "logo" => "flaticon-lock22", "url" => "login" , "submenu" => array() ),
 			"Register" 	=> array( "active" => "", "logo" => "flaticon-lock23", "url" => "register" , "submenu" => array() )
 		);
-		$grav_url = $siteFunctions->get_gravatar("none");
 
 	}
 
@@ -46,6 +49,7 @@
 	    <title><?php echo $siteFunctions->setPageTitle(); ?></title>
 
 		<link rel="stylesheet" type="text/css"  href="<?php echo $domain; ?>assets/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css"  href="<?php echo $domain; ?>assets/css/weather-icons.min.css">
 		<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
 		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
