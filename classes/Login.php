@@ -235,6 +235,7 @@ class Login extends siteFunctions
                         $_SESSION['user_first_name'] = $result_row->user_first_name;
                         $_SESSION['user_last_name'] = $result_row->user_last_name;
                         $_SESSION['user_logged_in'] = 1;
+                        $_SESSION['user_account_type'] = $result_row->user_account_type;
                         $_SESSION['user_display_avatar'] = $result_row->user_display_avatar;
                         if ($result_row->user_avatar != null) {
                             $_SESSION['user_avatar'] = 1;
@@ -347,6 +348,7 @@ class Login extends siteFunctions
                 $_SESSION['user_first_name'] = $result_row->user_first_name;
                 $_SESSION['user_last_name'] = $result_row->user_last_name;
                 $_SESSION['user_logged_in'] = 1;
+                $_SESSION['user_account_type'] = $result_row->user_account_type;
                 $_SESSION['user_display_avatar'] = $result_row->user_display_avatar;
                 if ($result_row->user_avatar != null) {
                     $_SESSION['user_avatar'] = 1;
@@ -723,7 +725,7 @@ class Login extends siteFunctions
                 $_SESSION['user_first_name'] =      $user_first_name;
                 $_SESSION['user_last_name'] =       $user_last_name;
                 $_SESSION['user_display_avatar'] =  $avatar_display;
-                return $this->callbackMessage("Your first and last name has been succesfully updated", "success");
+                return $this->callbackMessage("Your first and last name has been successfully updated", "success");
             } else {
                 return $this->callbackMessage("ERROR: " . $sql->errorCode() . ", please contact support." , "danger");
             }

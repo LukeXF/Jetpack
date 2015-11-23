@@ -133,6 +133,9 @@ nav {
     padding-top: 25px;
     padding-bottom: 25px;
     font-size: 18px; }
+  nav .navbar-nav .active a, nav .navbar-nav .active a:hover, nav .navbar-nav .active a:focus {
+    background-color: transparent !important;
+    font-weight: bold; }
   nav .navbar-brand {
     padding: 0;
     margin: 10px; }
@@ -240,5 +243,8 @@ nav {
 
 .tile {
   border: 1px solid #ccc; }
+
+.tile-padding {
+  padding: 20px; }
 
 /*# sourceMappingURL=style.css.map */

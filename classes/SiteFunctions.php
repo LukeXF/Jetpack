@@ -324,7 +324,7 @@ class siteFunctions
 		$size = '200';
 
 		if ($_SESSION['user_display_avatar'] == "Site Avatar") {
-			return $this->url("assets/img/avatar", array("pic" => "LukeXF" ));
+			return $this->url("assets/img/avatar", array("pic" => $_SESSION['user_name'] ));
 		} else {
 			return $this->getGravatar($email, $size);
 		}

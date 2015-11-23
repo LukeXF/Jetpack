@@ -7,8 +7,21 @@
     }
 </style>
 
+<script>
+
+    $("#wizard").steps({
+        bodyTag: "fieldset",
+        onFinished: function (event, currentIndex)
+        {
+            // Submission code
+            $(this).submit();
+        }
+    });
+</script>
+
 <link rel="stylesheet" type="text/css"  href="<?php echo $domain; ?>assets/css/steps.css">
 
+<script type="text/javascript" src="<?php echo $domain; ?>assets/js/jquery.steps.js"></script>
 <div class="container">
     <div class="row">
         <div class="col-md-4 col-md-offset-4 contentbox">

@@ -36,7 +36,7 @@
 
 			<?php // $siteFunctions->debug($_POST); ?>
 			<?php // $siteFunctions->debug($_FILES); ?>
-			<?php $siteFunctions->debug($_SESSION); ?>
+			<?php // $siteFunctions->debug($_SESSION); ?>
 			<ul class="nav nav-tiles">
 				<h3 align="center">Account Settings</h3>
 				<?php $siteFunctions->navbar($navbar, true, true); ?>

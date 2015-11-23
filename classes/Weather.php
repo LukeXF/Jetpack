@@ -45,12 +45,12 @@ class Weather extends siteFunctions
             6 => 'Fog',
             7 => 'Cloudy',
             8 => 'Overcast',
-            9 => 'Light rain shower', // nighttime
-            10 => 'Light rain showe)', // daytime
+            9 => 'Light rain', // nighttime
+            10 => 'Light rain', // daytime
             11 => 'Drizzle',
             12 => 'Light rain',
-            13 => 'Heavy rain shower', // nighttime
-            14 => 'Heavy rain shower', // daytime
+            13 => 'Heavy rain', // nighttime
+            14 => 'Heavy rain', // daytime
             15 => 'Heavy rain',
             16 => 'Sleet shower', // nighttime
             17 => 'Sleet shower', // daytime
@@ -115,6 +115,7 @@ class Weather extends siteFunctions
           <ul>
           ';
 
+
         for ($i = 0; $i < 3; $i++) {
             $dayWeather = $days[$i]["Rep"][0]["W"];
             $nightWeather = $days[$i]["Rep"][1]["W"];
@@ -141,7 +142,7 @@ class Weather extends siteFunctions
                     <div class="row">
                         <div class="col-md-12">
                            ' . $tomorrow . '
-                            <h3>' . date("l jS M",strtotime($days[$i]['value'])) . '</h3>
+                            <h3>' . date("l jS M",strtotime(str_replace("Z", "", $days[$i]['value']))) . '</h3>
                             <h4>' . $days[$i]["Rep"][1]['Nm'] . '&deg;c-' . $days[$i]["Rep"][0]['Dm'] . '&deg;c
                                 <i>Feels like: ' . $days[$i]["Rep"][1]['FNm'] . '&deg;c-' . $days[$i]["Rep"][0]['FDm'] . '&deg;c</i>
                             </h4>

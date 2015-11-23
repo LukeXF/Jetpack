@@ -1,3 +1,4 @@
+
 <?php
 // show potential errors / feedback (from login object)
 if (isset($login)) {
@@ -43,6 +44,9 @@ if (isset($registration)) {
 
 
 <div class="row tile">
+	<script type="text/javascript" src="<?php echo $domain; ?>assets/js/jquery-pack.js"></script>
+	<script type="text/javascript" src="<?php echo $domain; ?>assets/js/jquery.imgareaselect.min.js"></script>
+
 	<div class="row tile-avatar-and-fullname">
 			<div class="col-md-8">
 				<div class="col-md-12">

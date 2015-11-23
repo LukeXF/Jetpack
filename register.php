@@ -1,6 +1,5 @@
 <?php
     include('assets/header.php');
-
     require_once('classes/Registration.php');
     $registration = new Registration();
 
