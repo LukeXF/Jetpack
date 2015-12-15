@@ -395,8 +395,12 @@ nav {
 
 .tile {
     border: 1px solid #ccc;
-}
 
-.tile-padding {
-    padding: 20px;
+    & .tile-padding {
+        padding: 20px;
+    }
+
+    .table th {
+        font-weight: bold;
+    }
 }

@@ -176,16 +176,22 @@ class siteFunctions
 		if ($this->databaseConnection()) {
 
 			// if you want to search by ID
-			if ($searchByID) {
+			if ($searchByID == "id") {
 				// database query, getting all the info of the selected user
-				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`
+				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`, `user_display_avatar`
 														FROM `users`
 														WHERE `user_id` = :username");
+			} elseif ($searchByID == "email") {
+				// database query, getting all the info of the selected user
+				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`, `user_display_avatar`
+														FROM `users`
+														WHERE `user_email` = :username");
 			} else {
 				// database query, getting all the info of the selected user
-				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`
+				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`, `user_display_avatar`
 														FROM `users`
 														WHERE `user_name` = :username OR `user_email` = :username");
+
 			}
 
 			// prepared statement for the username
@@ -195,6 +201,7 @@ class siteFunctions
 
 			// get result row (as an object)
 			return $query_user->fetchObject();
+
 
 		} else {
 
@@ -209,15 +216,32 @@ class siteFunctions
 	{
 		// search by user ID to get the returned object of the user data
 		// the true is set to search by ID and not username or email
-		if ($this->getUserData($username, true) != false) {
+		if ($this->getUserData($username, "id") != false) {
 
 			// output the desired user data
-			return $this->getUserData($username, true)->$info;
+			return $this->getUserData($username, "id")->$info;
 
 		} else {
 
 			// If there is no error, output the the error function
 			$this->error('No user found');
+		}
+	}
+
+	// Get User from ID (used in the news system and other database queries)
+	public function getUserDataFromEmail($username, $info = "user_name")
+	{
+		// search by user ID to get the returned object of the user data
+		// the true is set to search by ID and not username or email
+		if ($this->getUserData($username, "email") != false) {
+
+			// output the desired user data
+			return $this->getUserData($username, "email")->$info;
+
+		} else {
+
+			// If there is no error, output the the error function
+			$this->callbackMessage("user " . $username . " was not found.", "danger");
 		}
 	}
 
@@ -316,17 +340,31 @@ class siteFunctions
 
 
 	// load the gravatar image for a defined email address
-	public function getAvatar($email, $size = 80)
+	public function getAvatar($email = false, $size = 80)
 	{
 		global $_SESSION;
 
-		$email = $_SESSION['user_email'];
-		$size = '200';
+		if ($email == false) {
 
-		if ($_SESSION['user_display_avatar'] == "Site Avatar") {
-			return $this->url("assets/img/avatar", array("pic" => $_SESSION['user_name'] ));
+			// assume they want SESSION avatar if no email is defined
+			if ($_SESSION['user_display_avatar'] == "Site Avatar") {
+				return $this->url("assets/img/avatar", array("pic" => $_SESSION['user_name']));
+			} else {
+				return $this->getGravatar($email, $size);
+			}
+
 		} else {
-			return $this->getGravatar($email, $size);
+
+			// return for things like user lists
+			if ($this->getUserDataFromEmail($email, "user_display_avatar") == "Site Avatar") {
+
+				$username = $this->getUserDataFromEmail($email, "user_name");
+				return $this->url("assets/img/avatar", array("pic" => $username));
+
+			} else {
+				return $this->getGravatar($email, $size);
+			}
+
 		}
 	}
 

@@ -22,7 +22,7 @@ class adminUsers extends siteFunctions
             // $this->debug($sql);
 
             if ( isset($sql) ) {
-                $this->debug($sql);
+                $this->debug($sql[0]);
                 return $sql;
             } else {
                return false;
@@ -39,46 +39,44 @@ class adminUsers extends siteFunctions
 
         $users = $this->getAllUsers();
 
-
-        for ($i = 0; $i <= count($users); $i++) {
-            echo "The number is: $i<br>";
-        }
-
-        echo '<table>
+        echo '<table class="table table-striped table-hover">
         <thead>
           <tr>
-            <th data-sort="int">int</th>
-            <th data-sort="float">float</th>
-            <th >string</th>
+            <th data-sort="int">User ID</th>
+            <th data-sort="string">Username</th>
+            <th data-sort="int">First Name</th>
+            <th data-sort="string">Last Name</th>
+            <th data-sort="string">Email</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>15</td>
-            <td>-.18</td>
-            <td>banana</td>
-          </tr>
-          <tr class="awesome">
-            <td>95</td>
-            <td>36</td>
-            <td>coke</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>-152.5</td>
-            <td>apple</td>
-          </tr>
-          <tr>
-            <td>-53</td>
-            <td>88.5</td>
-            <td>zebra</td>
-          </tr>
-          <tr>
-            <td>195</td>
-            <td>-858</td>
-            <td>orange</td>
-          </tr>
+        <tbody>';
+
+        for ($i = 0; $i < count($users); $i++) {
+
+            if (empty($users[$i]['user_first_name'])) {
+                $users[$i]['user_first_name'] = "<i style='opacity:0.5;'>- empty -</i>";
+            }
+
+            if (empty($users[$i]['user_last_name'])) {
+                $users[$i]['user_last_name'] = "<i style='opacity:0.5;'>- empty -</i>";
+            }
+
+            echo "
+            <tr>
+                <td>" . $users[$i]['user_id'] . "</td> 
+                <td data-sort-value='" . $users[$i]['user_name'] . "'> <img src='" . $this->getAvatar($users[$i]['user_email']) . "'>" . $users[$i]['user_name'] . "</td>
+                <td>" . $users[$i]['user_first_name'] . "</td>
+                <td>" . $users[$i]['user_last_name'] . "</td>
+                <td>" . $users[$i]['user_email'] . "</td>
+            </tr>";
+        }
+
+        echo "
+
         </tbody>
-      </table>';
+      </table>";
+
+
+
     }
 }

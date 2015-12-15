@@ -1,0 +1,1 @@
+git config --global http.proxy http://gts-mwg-vip.gtspt.corp:4713/files/proxy.pac

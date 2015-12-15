@@ -20,7 +20,7 @@
 		$weather = new Weather();
 		$imageUpload = new imageUpload();
 		$payments = new Payments();
-		$avatar = $siteFunctions->getAvatar($_SESSION['user_email']);
+		$avatar = $siteFunctions->getAvatar();
 		// $siteFunctions->debug($_SESSION);
 
 		$navbar = array(
