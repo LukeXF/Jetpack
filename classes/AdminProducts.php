@@ -140,7 +140,7 @@ class adminProducts extends siteFunctions
         }
 
         echo "
-        <!-- User data modal -->
+        <!-- Product data modal -->
         <div class='modal fade' id='editProduct" . $product['product_id'] . "' tabindex='-1' role='dialog' aria-labelledby='#editProduct" . $product['product_id'] . "'>
             <div class='modal-dialog' role='document'>
                 <form method='post' action='" . $this->url("processing") . "' name='process'>
@@ -186,7 +186,16 @@ class adminProducts extends siteFunctions
                                     <p>Keywords</p>
                                 </div>
                                 <div class='col-md-8'>
-                                    <input name='data[product_keywords]' value='" . $product['product_keywords'] . "' />
+                                    <input name='data[product_keywords]' value='" . $product['product_keywords'] . "' placeholder='separate, keywords, like, this' />
+                                </div>
+                            </div>
+                            <div cla
+                            <div class='row'>
+                                <div class='col-md-4'>
+                                    <p>Dropdown Options</p>
+                                </div>
+                                <div class='col-md-8'>
+                                    <input name='data[product_options]' value='" . $product['product_options'] . "' placeholder='separate, options, like, this' />
                                 </div>
                             </div>
                             <div class='row'>
@@ -283,14 +292,15 @@ class adminProducts extends siteFunctions
     public function createNewProduct($data){
         if ($this->databaseConnection()) {
             $sql = $this->db_connection->prepare('INSERT INTO products
-                                                          (product_name, product_price, product_description, product_visibility, product_keywords, product_image_one, product_image_two, product_image_three)
-                                                           VALUES(:product_name, :product_price, :product_description, :product_visibility, :product_keywords, :product_image_one, :product_image_two, :product_image_three)');
+                                                          (product_name, product_price, product_description, product_visibility, product_keywords, product_options product_image_one, product_image_two, product_image_three)
+                                                           VALUES(:product_name, :product_price, :product_description, :product_visibility, :product_keywords, :product_options :product_image_one, :product_image_two, :product_image_three)');
             // prepared statement for the username field
             $sql->bindValue(':product_name', $data['product_name'], PDO::PARAM_STR);
             $sql->bindValue(':product_price', $data['product_price'], PDO::PARAM_STR);
             $sql->bindValue(':product_description', $data['product_description'], PDO::PARAM_STR);
             $sql->bindValue(':product_visibility', $data['product_visibility'], PDO::PARAM_INT);
             $sql->bindValue(':product_keywords', $data['product_keywords'], PDO::PARAM_STR);
+            $sql->bindValue(':product_options', $data['product_options'], PDO::PARAM_STR);
             $sql->bindValue(':product_image_one', $data['product_image_one'], PDO::PARAM_INT);
             $sql->bindValue(':product_image_two', $data['product_image_two'], PDO::PARAM_INT);
             $sql->bindValue(':product_image_three', $data['product_image_three'], PDO::PARAM_INT);
@@ -316,6 +326,7 @@ class adminProducts extends siteFunctions
                 `product_description` = :product_description,
                 `product_visibility` = :product_visibility,
                 `product_keywords` = :product_keywords,
+                `product_options` = :product_options,
                 `product_image_one` = :product_image_one,
                 `product_image_two` = :product_image_two,
                 `product_image_three` = :product_image_three
@@ -326,6 +337,7 @@ class adminProducts extends siteFunctions
             $sql->bindValue(':product_description', $data['product_description'], PDO::PARAM_STR);
             $sql->bindValue(':product_visibility', $data['product_visibility'], PDO::PARAM_INT);
             $sql->bindValue(':product_keywords', $data['product_keywords'], PDO::PARAM_STR);
+            $sql->bindValue(':product_options', $data['product_options'], PDO::PARAM_STR);
             $sql->bindValue(':product_id', $data['product_id'], PDO::PARAM_INT);
             $sql->bindValue(':product_image_one', $data['product_image_one'], PDO::PARAM_INT);
             $sql->bindValue(':product_image_two', $data['product_image_two'], PDO::PARAM_INT);

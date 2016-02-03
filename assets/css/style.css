@@ -145,6 +145,12 @@ nav {
     margin: 10px; }
   nav .dropdown:hover .dropdown-menu {
     display: block !important; }
+  nav span.bt-stack {
+    margin: -8px -20px -8px;
+    font-size: 2.3em; }
+  nav .nav-checkout {
+    margin: -9px -2px -7px;
+    text-align: right; }
 
 .nav-tiles .title {
   font-size: 20px; }
@@ -260,8 +266,10 @@ nav {
   .tile-store .tile {
     padding: 20px;
     margin: 20px 0; }
-    .tile-store .tile h3 span {
-      font-size: 15px; }
+    .tile-store .tile h1 {
+      margin-bottom: 0; }
+    .tile-store .tile h3 {
+      margin-top: 0; }
     .tile-store .tile img {
       max-width: 100%;
       border: 1px solid #ccc; }
@@ -273,5 +281,52 @@ nav {
       max-height: 40px;
       border-radius: 50px;
       margin-right: 5px; }
+  .tile #payment-form {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 1px; }
+
+.tile-cart h1 {
+  padding: 0 20px; }
+.tile-cart .table {
+  border-radius: 5px;
+  background: #fdfdfd; }
+  .tile-cart .table thead {
+    background-color: white; }
+    .tile-cart .table thead tr > th:first-of-type {
+      border-top-left-radius: 5px; }
+  .tile-cart .table th {
+    font-weight: bold;
+    padding: 15px 30px; }
+  .tile-cart .table .table-grey {
+    background-color: #f9f9f9; }
+  .tile-cart .table .table-footer {
+    background-color: white;
+    border-top: 2px solid #dcdcdc; }
+  .tile-cart .table .btn {
+    float: right; }
+  .tile-cart .table td {
+    vertical-align: inherit;
+    padding: 15px 30px; }
+    .tile-cart .table td img {
+      max-height: 40px;
+      border-radius: 50px;
+      margin: auto;
+      display: block; }
+
+.tile-checkout {
+  margin-top: 20px; }
+  .tile-checkout .logged-in {
+    margin: 0 auto; }
+    .tile-checkout .logged-in .col-md-2 > span {
+      float: right; }
+    .tile-checkout .logged-in img {
+      max-height: 70px;
+      float: right;
+      margin-right: 10px; }
+    .tile-checkout .logged-in h5, .tile-checkout .logged-in h3 {
+      margin: 0px; }
+    .tile-checkout .logged-in h3 {
+      margin-top: 12px; }
 
 /*# sourceMappingURL=style.css.map */

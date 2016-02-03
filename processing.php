@@ -14,6 +14,11 @@
 
         if(isset($_POST['process'])) {
 
+            if ($_POST['process'] == "addToCart") {
+                $store->addToCart($_POST['data']);
+                $siteFunctions->callback("store", $_POST['data']['product_id'], "product");
+            }
+
             if ($_POST['process'] == "loginAsUser") {
                 $adminUsers->loginAsUser($_POST['user_id']);
             }

@@ -65,6 +65,14 @@
                 </div>
                 <div class='row'>
                     <div class='col-md-4'>
+                        <p>Options</p>
+                    </div>
+                    <div class='col-md-8'>
+                        <input name='data[product_options]' placeholder="up to 5, separated by commas"/>
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-md-4'>
                         <p>Visibility</p>
                     </div>
                     <div class='col-md-8'>

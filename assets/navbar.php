@@ -17,6 +17,17 @@
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<?php  if ($login->isUserLoggedIn() == true) { ?>
+					<li>
+						<?php $store->navbarCart(); ?>
+					</li>
+					<li>
+						<a href="<?php echo $siteFunctions->url("cart"); ?>">
+							<span class="bt-stack bt-3x">
+		  						<i class="btl bt-circle bt-stack-1x"></i>
+	  							<i class="btl bt-shopping-cart bt-stack-sm"></i>
+							</span>
+						</a>
+					</li>
 					<li class="dropdown animate">
 						<a href="#" class="dropdown-toggle animate" data-toggle="dropdown" role="button" aria-expanded="false">
 
@@ -27,7 +38,7 @@
 							<li><a>Logged in as <?php echo $_SESSION['user_name']; ?> </a></li>
 							<li class="divider"></li>
 							<li><a href="<?php echo $siteFunctions->url("settings"); ?>">Account Overview</a></li>
-							<li><a href="<?php echo $siteFunctions->url("settings", array("p"=>"general-settings") ); ?>">Edit Your Account</a></li>
+							<li><a href="<?php echo $siteFunctions->url("settings", array("pd"=>"general-settings") ); ?>">Edit Your Account</a></li>
 							<li class="divider"></li>
 							<li><a href="?logout">Logout</a></li>
 						</ul>

@@ -491,17 +491,13 @@ class siteFunctions
 
 
 	// for callbacks on the processing page
-	public function callback($callback = false, $request = false) {
+	public function callback($callback = false, $request = false, $param = false) {
 
 		// access the site domain
 		global $domain;
 		global $dotPHP;
 		global $_SERVER;
 
-
-	    //if ($callback == $_SERVER['HTTP_REFERER'] ) {
-		//	$callback = $domain . $callback;
-	    // }
 
 		if ($request)  {
 			// if the GET request is already started, then add to it
@@ -511,10 +507,15 @@ class siteFunctions
 				$and = "?";
 			}
 
+			if ($param) {
+				$value = $param;
+			} else {
+				$value = "p";
+			}
 			// alright, send user on their way.
 			echo "
-				<meta http-equiv='Refresh' content='0; " . $callback . $dotPHP . $and . "p=" . $request . "'>
-				<script>window.location = '" . $callback . $dotPHP . $and . "p=" . $request . ";</script>
+				<meta http-equiv='Refresh' content='0; " . $callback . $dotPHP . $and . $value . "=" . $request . "'>
+				<script>window.location = '" . $callback . $dotPHP . $and . $value . "=" . $request . ";</script>
 			";
 
 		} elseif ($callback == false) {
