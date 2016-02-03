@@ -2,6 +2,14 @@
     <div class="row">
         <div class="col-md-9">
         </div>
-        <?php $store->displayStore(); ?>
+        <?php
+            $siteFunctions->displayCallbackMessage();
+
+            if (isset($_GET['product'])) {
+                $store->displayProduct($_GET['product']);
+            } else {
+                $store->displayStore();
+            }
+        ?>
     </div>
 </div>

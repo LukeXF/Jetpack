@@ -416,9 +416,17 @@ nav {
         padding: 20px;
     }
 
-    &.tile-store {
+    .input-group-addon {
+        margin-top: 10px !important;
+    }
+
+    .tile-store & {
         padding: 20px;
         margin: 20px 0;
+
+        h3 span {
+            font-size: 15px;
+        }
 
         img {
             max-width: 100%;

@@ -556,8 +556,8 @@ class siteFunctions
 
 	}
 
-	private function addDashes($string){
-		return str_replace(' ','-',$string);
+	public function addDashes($string){
+		return str_replace(' ','.',$string);
 	}
 
 	// create the circle function

@@ -17,13 +17,19 @@ class Store extends siteFunctions
     /*
     * Loads all user data from table
     */
-    private function getAllVisibleProducts()
+    private function getAllVisibleProducts($product_id = false)
     {
         // if database connection opened
         if ($this->databaseConnection()) {
 
+            if ($product_id) {
+                $sql = $this->db_connection->prepare("SELECT * FROM `products` WHERE `product_id` :product_id");
+                $sql->bindValue(':product_id', $product_id, PDO::PARAM_INT);
+            } else {
+                $sql = $this->db_connection->prepare("SELECT * FROM `products` WHERE `product_visibility` != 0");
+            }
+
             // load pages for the user
-            $sql = $this->db_connection->prepare("SELECT * FROM `products` WHERE `product_visibility` = 1");
             $sql->execute();
 
             // fetch all from the widget
@@ -46,32 +52,67 @@ class Store extends siteFunctions
 
     public function displayStore()
     {
-
+        global $currency;
         $products = $this->getAllVisibleProducts();
+
         // $this->debug($products);
+
         if ($products != false) {
 
             for ($i = 0; $i < count($products); $i++) {
 
+                $urlArray = array(
+                    "product" => $products[$i]['product_id'],
+                    "name" => $this->addDashes($products[$i]['product_name'])
+                );
                 echo "
-                <div class='col-md-6'>
-                    <div class='tile tile-store'>
-                        <div class='row'>
-                            <div class='col-xs-3 col-md-6'>
-                               <img src='" . $products[$i]['product_image_one'] . "'>
-                            </div>
-                            <div class='col-xs-9 col-md-6'>
-                                <h3>" . $products[$i]['product_name'] . "</h3>
-                                <p>" . $products[$i]['product_description'] . "</p>
-                                <button type='button' class='btn btn-default' data-toggle='modal' data-target='#shoppingCart" . $products[$i]['product_id'] . "'>
-                                    <i class='btl bt-shopping-cart'></i> More details
-                                </button>
-
+                    <div class='col-md-6 tile-store'>
+                        <div class='tile'>
+                            <div class='row'>
+                                <div class='col-xs-3 col-md-5'>
+                                   <img src='" . $products[$i]['product_image_one'] . "'>
+                                </div>
+                                <div class='col-xs-9 col-md-7'>
+                                    <h3>" . $products[$i]['product_name'] . " <span>" . $currency . $products[$i]['product_price'] . "</span></h3>
+                                    <p>" . $this->truncate($products[$i]['product_description'], 180) . "</p>
+                                    <a href='" . $this->url("store", $urlArray ) . "' type='button' class='btn btn-default'>
+                                        <i class='btl bt-shopping-cart'></i> More details
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>";
+                ";
             }
+        }
+    }
+
+    public function displayProduct($id){
+
+        global $currency;
+        $products = $this->getAllVisibleProducts();
+
+        if ($products != false) {
+            echo "
+                    <div class='col-md-6 tile-store'>
+                        <div class='tile'>
+                            <div class='row'>
+                                <div class='col-xs-3 col-md-5'>
+                                   <img src='" . $products[0]['product_image_one'] . "'>
+                                </div>
+                                <div class='col-xs-9 col-md-7'>
+                                    <h3>" . $products[0]['product_name'] . " <span>" . $currency . $products[0]['product_price'] . "</span></h3>
+                                    <p>" . $this->truncate($products[0]['product_description'], 180) . "</p>
+                                    <a href='" . $this->url("store", $urlArray ) . "' type='button' class='btn btn-default'>
+                                        <i class='btl bt-shopping-cart'></i> More details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            ";
+        } else {
+            $this->callbackMessage("Product not found", "danger");
         }
     }
 }

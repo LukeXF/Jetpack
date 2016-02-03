@@ -253,9 +253,14 @@ nav {
   border: 1px solid #ccc; }
   .tile .tile-padding {
     padding: 20px; }
-  .tile.tile-store {
-    padding: 20px; }
-    .tile.tile-store img {
+  .tile .input-group-addon {
+    margin-top: 10px !important; }
+  .tile-store .tile {
+    padding: 20px;
+    margin: 20px 0; }
+    .tile-store .tile h3 span {
+      font-size: 15px; }
+    .tile-store .tile img {
       max-width: 100%;
       border: 1px solid #ccc; }
   .tile .table th {

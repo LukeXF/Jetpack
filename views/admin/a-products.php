@@ -74,6 +74,30 @@
                         </select>
                     </div>
                 </div>
+                <div class='row'>
+                    <div class='col-md-4'>
+                        <p>Image One URL</p>
+                    </div>
+                    <div class='col-md-8'>
+                        <input name='data[product_image_one]' placeholder="The main image" />
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-md-4'>
+                        <p>Image Two URL</p>
+                    </div>
+                    <div class='col-md-8'>
+                        <input name='data[product_image_two]' placeholder="Secondary image" />
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class='col-md-4'>
+                        <p>Image Three URL</p>
+                    </div>
+                    <div class='col-md-8'>
+                        <input name='data[product_image_three]' placeholder="Third image" />
+                    </div>
+                </div>
 
             </div>
             <div class='modal-footer'>

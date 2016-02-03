@@ -48,6 +48,7 @@ class adminProducts extends siteFunctions
       */
     public function displayProductsTable(){
 
+        global $currency;
         $products = $this->getAllProducts();
         // $this->debug($products);
         if ($products != false) {
@@ -59,7 +60,7 @@ class adminProducts extends siteFunctions
                 <th data-sort="string">Sale Price</th>
                 <th data-sort="string">Date Added</th>
                 <th data-sort="string">Orders Placed</th>
-                <th data-sort="string">Visitiblity</th>
+                <th data-sort="string">Visibility</th>
                 <th>Options</th>
               </tr>
             </thead>
@@ -67,14 +68,22 @@ class adminProducts extends siteFunctions
 
             for ($i = 0; $i < count($products); $i++) {
 
+                if ($products[$i]["product_visibility"] == 2) {
+                        $visibility = "In Stock";
+                } elseif ($products[$i]["product_visibility"] == 1) {
+                    $visibility = "Out of Stock";
+                } else {
+                    $visibility = "Hidden";
+                }
+
                 echo "
                 <tr>
                     <td>" . $products[$i]['product_id'] . "</td>
                     <td data-sort-value='" . $products[$i]['product_name'] . "'> <img src='" . $products[$i]['product_image_one'] . "'>" . $products[$i]['product_name'] . "</td>
-                    <td>$" . $products[$i]['product_price'] . "</td>
+                    <td>" . $currency . $products[$i]['product_price'] . "</td>
                     <td>" . date('d M H:i', strtotime($products[$i]['product_date'])) . "</td>
                     <td></td>
-                    <td>" . $products[$i]['product_visibility'] . "</td>
+                    <td>" . $visibility . "</td>
                     <!-- Button trigger modal -->
                     <td>
 
@@ -108,6 +117,28 @@ class adminProducts extends siteFunctions
 
     private function editProductModal($product){
 
+        global $currency;
+
+        if ($product["product_visibility"] == 2) {
+            $visibility = "
+                <option selected value='2'>In Stock</option>
+                <option value='1'>Out of Stock</option>
+                <option value='0'>Hidden on site</option>
+            ";
+        } elseif ($product["product_visibility"] == 1) {
+            $visibility = "
+                <option value='2'>In Stock</option>
+                <option selected value='1'>Out of Stock</option>
+                <option value='0'>Hidden on site</option>
+            ";
+        } else {
+            $visibility = "
+                <option value='2'>In Stock</option>
+                <option value='1'>Out of Stock</option>
+                <option selected value='0'>Hidden on site</option>
+            ";
+        }
+
         echo "
         <!-- User data modal -->
         <div class='modal fade' id='editProduct" . $product['product_id'] . "' tabindex='-1' role='dialog' aria-labelledby='#editProduct" . $product['product_id'] . "'>
@@ -136,7 +167,7 @@ class adminProducts extends siteFunctions
                             </div>
                             <div class='row'>
                                 <div class='col-md-4'>
-                                    <p>Sale Price</p>
+                                    <p>Sale Price in " . $currency . "</p>
                                 </div>
                                 <div class='col-md-8'>
                                     <input name='data[product_price]' value='" . $product['product_price'] . "'/>
@@ -160,12 +191,35 @@ class adminProducts extends siteFunctions
                             </div>
                             <div class='row'>
                                 <div class='col-md-4'>
+                                    <p>Image One URL</p>
+                                </div>
+                                <div class='col-md-8'>
+                                    <input name='data[product_image_one]' value='" . $product['product_image_one'] . "' />
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-md-4'>
+                                    <p>Image Two URL</p>
+                                </div>
+                                <div class='col-md-8'>
+                                    <input name='data[product_image_two]' value='" . $product['product_image_two'] . "' />
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-md-4'>
+                                    <p>Image Three URL</p>
+                                </div>
+                                <div class='col-md-8'>
+                                    <input name='data[product_image_three]' value='" . $product['product_image_three'] . "' />
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-md-4'>
                                     <p>Visibility</p>
                                 </div>
                                 <div class='col-md-8'>
                                     <select name='data[product_visibility]' class='form-control'>
-                                        <option value='1'>Visible on site</option>
-                                        <option value='0'>Hidden on site</option>
+                                        " . $visibility . "
                                     </select>
                                 </div>
                             </div>
@@ -229,14 +283,17 @@ class adminProducts extends siteFunctions
     public function createNewProduct($data){
         if ($this->databaseConnection()) {
             $sql = $this->db_connection->prepare('INSERT INTO products
-                                                          (product_name, product_price, product_description, product_visibility, product_keywords)
-                                                           VALUES(:product_name, :product_price, :product_description, :product_visibility, :product_keywords)');
+                                                          (product_name, product_price, product_description, product_visibility, product_keywords, product_image_one, product_image_two, product_image_three)
+                                                           VALUES(:product_name, :product_price, :product_description, :product_visibility, :product_keywords, :product_image_one, :product_image_two, :product_image_three)');
             // prepared statement for the username field
             $sql->bindValue(':product_name', $data['product_name'], PDO::PARAM_STR);
             $sql->bindValue(':product_price', $data['product_price'], PDO::PARAM_STR);
             $sql->bindValue(':product_description', $data['product_description'], PDO::PARAM_STR);
             $sql->bindValue(':product_visibility', $data['product_visibility'], PDO::PARAM_INT);
             $sql->bindValue(':product_keywords', $data['product_keywords'], PDO::PARAM_STR);
+            $sql->bindValue(':product_image_one', $data['product_image_one'], PDO::PARAM_INT);
+            $sql->bindValue(':product_image_two', $data['product_image_two'], PDO::PARAM_INT);
+            $sql->bindValue(':product_image_three', $data['product_image_three'], PDO::PARAM_INT);
             // execute it all!
             $sql->execute();
 
@@ -258,7 +315,10 @@ class adminProducts extends siteFunctions
                 `product_price` = :product_price,
                 `product_description` = :product_description,
                 `product_visibility` = :product_visibility,
-                `product_keywords` = :product_keywords
+                `product_keywords` = :product_keywords,
+                `product_image_one` = :product_image_one,
+                `product_image_two` = :product_image_two,
+                `product_image_three` = :product_image_three
             WHERE `product_id` = :product_id');
 
             $sql->bindValue(':product_name', $data['product_name'], PDO::PARAM_STR);
@@ -267,6 +327,9 @@ class adminProducts extends siteFunctions
             $sql->bindValue(':product_visibility', $data['product_visibility'], PDO::PARAM_INT);
             $sql->bindValue(':product_keywords', $data['product_keywords'], PDO::PARAM_STR);
             $sql->bindValue(':product_id', $data['product_id'], PDO::PARAM_INT);
+            $sql->bindValue(':product_image_one', $data['product_image_one'], PDO::PARAM_INT);
+            $sql->bindValue(':product_image_two', $data['product_image_two'], PDO::PARAM_INT);
+            $sql->bindValue(':product_image_three', $data['product_image_three'], PDO::PARAM_INT);
             $sql->execute();
 
             if ($sql->rowCount()) {
@@ -276,7 +339,5 @@ class adminProducts extends siteFunctions
             }
         }
     }
-
-
 
 }
