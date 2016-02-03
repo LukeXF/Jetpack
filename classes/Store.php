@@ -4,14 +4,25 @@
 class Store extends siteFunctions
 {
 
-    public function testPayment()
+    public function generateToken()
     {
         require("lib/braintree-php-3.5.0/lib/Braintree.php");
         Braintree_Configuration::environment('sandbox');
         Braintree_Configuration::merchantId('w7gz99fhtbrhj6y6');
         Braintree_Configuration::publicKey('p5hhp9ctz3znhsq3');
         Braintree_Configuration::privateKey('2baa5dd4adcb171001ce768fc2edf041');
-        $this->debug($clientToken = Braintree_ClientToken::generate());
+        $clientToken = Braintree_ClientToken::generate();
+        return $clientToken;
+    }
+
+    public function pay($nonce){
+
+        $result = Braintree_Transaction::sale([
+            'amount' => '10.00',
+            'paymentMethodNonce' => $nonce
+        ]);
+
+        $this->debug($result);
     }
 
     /*
@@ -94,18 +105,15 @@ class Store extends siteFunctions
 
         if ($products != false) {
             echo "
-                    <div class='col-md-6 tile-store'>
+                    <div class='col-md-12 tile-store'>
                         <div class='tile'>
                             <div class='row'>
-                                <div class='col-xs-3 col-md-5'>
+                                <div class='col-md-3'>
                                    <img src='" . $products[0]['product_image_one'] . "'>
                                 </div>
-                                <div class='col-xs-9 col-md-7'>
+                                <div class='col-md-9'>
                                     <h3>" . $products[0]['product_name'] . " <span>" . $currency . $products[0]['product_price'] . "</span></h3>
                                     <p>" . $this->truncate($products[0]['product_description'], 180) . "</p>
-                                    <a href='" . $this->url("store", $urlArray ) . "' type='button' class='btn btn-default'>
-                                        <i class='btl bt-shopping-cart'></i> More details
-                                    </a>
                                 </div>
                             </div>
                         </div>

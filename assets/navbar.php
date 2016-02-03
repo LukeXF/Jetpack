@@ -20,13 +20,12 @@
 					<li class="dropdown animate">
 						<a href="#" class="dropdown-toggle animate" data-toggle="dropdown" role="button" aria-expanded="false">
 
-							<?php echo $_SESSION['user_first_name']; ?>
-							<?php echo $_SESSION['user_last_name']; ?>
-							(<?php echo $_SESSION['user_name']; ?>)
 							<span class="caret"></span>
 							<img class="nav-image" src="<?php echo $avatar ?>"></a>
 
 						<ul class="dropdown-menu" role="menu">
+							<li><a>Logged in as <?php echo $_SESSION['user_name']; ?> </a></li>
+							<li class="divider"></li>
 							<li><a href="<?php echo $siteFunctions->url("settings"); ?>">Account Overview</a></li>
 							<li><a href="<?php echo $siteFunctions->url("settings", array("p"=>"general-settings") ); ?>">Edit Your Account</a></li>
 							<li class="divider"></li>

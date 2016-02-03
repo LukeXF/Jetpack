@@ -143,6 +143,8 @@ nav {
   nav .navbar-brand {
     padding: 0;
     margin: 10px; }
+  nav .dropdown:hover .dropdown-menu {
+    display: block !important; }
 
 .nav-tiles .title {
   font-size: 20px; }
