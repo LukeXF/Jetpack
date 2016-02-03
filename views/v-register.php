@@ -38,7 +38,7 @@
                     }
                 }
                 if ($registration->messages) {
-                    echo '<div class="alert alert-danger" role="alert" alert-dismissible"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+                    echo '<div class="alert alert-info" role="alert" alert-dismissible"> <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
                     foreach ($registration->messages as $message) {
                         echo $message;
                         echo '</div>';

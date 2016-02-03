@@ -1,3 +1,13 @@
+
+$("#wizard").steps({
+    bodyTag: "fieldset",
+    onFinished: function (event, currentIndex)
+    {
+        // Submission code
+        $(this).submit();
+    }
+});
+
 (function($) {
 
     $(document)

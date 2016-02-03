@@ -247,5 +247,11 @@ nav {
     padding: 20px; }
   .tile .table th {
     font-weight: bold; }
+  .tile .table td {
+    vertical-align: inherit; }
+    .tile .table td img {
+      max-height: 40px;
+      border-radius: 50px;
+      margin-right: 5px; }
 
 /*# sourceMappingURL=style.css.map */

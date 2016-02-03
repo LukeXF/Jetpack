@@ -400,7 +400,20 @@ nav {
         padding: 20px;
     }
 
-    .table th {
-        font-weight: bold;
+    .table {
+        th {
+            font-weight: bold;
+        }
+
+        td {
+            vertical-align: inherit;
+            img {
+                max-height: 40px;
+                border-radius: 50px;
+                margin-right: 5px;
+            }
+        }
     }
+
+
 }
