@@ -14,6 +14,16 @@
 
         if(isset($_POST['process'])) {
 
+            if ($_POST['process'] == "addNewAddress") {
+                $store->addNewAddress($_POST['data']);
+                $siteFunctions->callback("checkout");
+            }
+
+            if ($_POST['process'] == "editExistingAddress") {
+                $store->editExistingAddress($_POST['data']);
+                $siteFunctions->callback("checkout");
+            }
+
             if ($_POST['process'] == "addToCart") {
                 $store->addToCart($_POST['data']);
                 $siteFunctions->callback("store", $_POST['data']['product_id'], "product");
@@ -37,6 +47,16 @@
                 $adminProducts->updateProductData($_POST['data']);
                 $siteFunctions->callback("admin", "products");
             }
+
+            if ($_POST['process'] == "applyCoupon") {
+                $store->applyCoupon($_POST['coupon']);
+                $siteFunctions->callback("checkout");
+            }
+        }
+
+        if (isset($_GET['removeItem'])) {
+            $store->removeItemFromCart($_GET['removeItem']);
+            $siteFunctions->callback("cart");
         }
 
     } else {

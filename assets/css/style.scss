@@ -475,7 +475,7 @@ nav {
 
 
 
-.tile-cart {
+.tile-cart, .tile-checkout {
     h1 {
         padding: 0 20px;
     }
@@ -512,11 +512,17 @@ nav {
                 margin: auto;
                 display: block;
             }
+            .quantity {
+                max-width: 50px !important;
+                min-width: 25px !important;
+                margin: auto;
+                display: block;
+            }
         }
     }
 }
 
-.tile-checkout {
+.tile-checkout, .tile-cart {
     margin-top: 20px;
     .logged-in {
         margin: 0 auto;
@@ -534,5 +540,36 @@ nav {
         h3 {
             margin-top: 12px;
         }
+    }
+    .tile-address {
+        border: 1px solid #ddd;
+        padding: 10px;
+        background: #fdfdfd;
+        cursor: pointer;
+        min-height: 142px;
+        margin: 10px 0px;
+        @extend .animate;
+
+        &.address-new .btl {
+            margin: 25px auto;
+            display: table;
+            color: #ccc;
+        }
+
+        &:hover {
+            border: 1px solid #bbb !important;
+            @extend .animate;
+        }
+
+        &.selected {
+            border: 1px solid #222;
+            @extend .animate;
+        }
+
+    }
+
+    .options {
+        text-align: center;
+        padding-bottom: 10px;
     }
 }

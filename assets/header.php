@@ -64,4 +64,14 @@
 		<script type="text/javascript" src="<?php echo $domain; ?>assets/js/bootstrap.min.js"></script>
 		<script type="text/javascript" src="<?php echo $domain; ?>assets/js/stupidtable.min.js"></script>
 
+
+		<script>
+			$( document ).ready(function() {
+				$(function () {
+					$('[data-toggle="tooltip"]').tooltip()
+				})
+				$('[data-tooltip="tooltip"]').tooltip();
+			});
+		</script>
+
 	</head>

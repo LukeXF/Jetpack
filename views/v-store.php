@@ -9,7 +9,7 @@
                 $store->displayProduct($_GET['product']);
             } else {
                 $store->displayStore();
-                $store->debug();
+                //$store->debug();
             }
         ?>
     </div>
