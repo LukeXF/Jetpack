@@ -36,7 +36,7 @@
 			'db_host' 		=> '127.0.0.1', 		// database host, usually localhost
 			'db_username' 	=> 'root', 		// database username
 			'db_password' 	=> 'root', 	// database password
-			'db_name' 		=> 'paypalpayments', 		// database name
+			'db_name' 		=> 'vsDashboard', 		// database name
 		);
 
 

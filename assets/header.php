@@ -7,8 +7,9 @@
 	require_once('classes/Login.php');
 	require_once('classes/Weather.php');
 	require_once('classes/ImageUpload.php');
-	require_once('classes/Payments.php');
+	require_once('classes/Store.php');
 	require_once('classes/AdminUsers.php');
+	require_once('classes/AdminProducts.php');
 
 
 	// initialize classes
@@ -19,7 +20,7 @@
 
 		$weather = new Weather();
 		$imageUpload = new imageUpload();
-		$payments = new Payments();
+		$store = new Store();
 		$avatar = $siteFunctions->getAvatar();
 		// $siteFunctions->debug($_SESSION);
 

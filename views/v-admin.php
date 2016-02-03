@@ -17,7 +17,7 @@ if (!empty($_GET['p'])) {
         $adminUsers = new adminUsers();
         $select_tab = 'views/admin/a-users.php';
     } elseif ($activeTab == 'products'){
-        $adminUsers = new adminUsers();
+        $adminProducts = new adminProducts();
         $select_tab = 'views/admin/a-products.php';
     } elseif ($activeTab == 'notifications'){
         $select_tab = 'views/admin/a-orders.php';

@@ -8,7 +8,7 @@ body {
   body .tile {
     background-color: white;
     padding: 20px auto; }
-  body .animate, body input, body select, body input:focus, body .btn-black, body .btn-black:hover, body .animate:hover, body input:hover, body select:hover, body .btn-black:hover, body .animate:focus, body input:focus, body select:focus, body .btn-black:focus, body .animate:active, body input:active, body select:active, body .btn-black:active {
+  body .animate, body input, body select, body textarea, body option, body input:focus, body select:focus, body textarea:focus, body option:focus, body .btn-black, body .btn-black:hover, body .animate:hover, body input:hover, body select:hover, body textarea:hover, body option:hover, body .btn-black:hover, body .animate:focus, body input:focus, body select:focus, body textarea:focus, body option:focus, body .btn-black:focus, body .animate:active, body input:active, body select:active, body textarea:active, body option:active, body .btn-black:active {
     transition: all .25s ease-in-out;
     -moz-transition: all .25s ease-in-out;
     -webkit-transition: all .25s ease-in-out; }
@@ -16,13 +16,17 @@ body {
     transition: all .75s ease-in-out;
     -moz-transition: all .75s ease-in-out;
     -webkit-transition: all .75s ease-in-out; }
-  body input, body select {
+  body input, body select, body textarea, body option {
     margin: 10px 0;
     padding: 10px;
     border: 1px solid #ddd;
-    width: 100%; }
-  body input:focus {
-    outline-color: #222; }
+    width: 100%;
+    max-width: 100%;
+    border-radius: 1px !important;
+    min-width: 100%;
+    max-height: 200px; }
+    body input:focus, body select:focus, body textarea:focus, body option:focus {
+      outline-color: #222; }
   body .form-btn, body .select-tab .form-btn-center, .select-tab body .form-btn-center {
     text-align: right;
     display: inherit; }
@@ -249,6 +253,11 @@ nav {
   border: 1px solid #ccc; }
   .tile .tile-padding {
     padding: 20px; }
+  .tile.tile-store {
+    padding: 20px; }
+    .tile.tile-store img {
+      max-width: 100%;
+      border: 1px solid #ccc; }
   .tile .table th {
     font-weight: bold; }
   .tile .table td {

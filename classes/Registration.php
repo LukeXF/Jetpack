@@ -191,7 +191,7 @@ class Registration
                     if ($this->sendVerificationEmail($user_id, $user_email, $user_activation_hash, $user_name)) {
 
                         // when mail has been send successfully
-                        $this->messages[] = "Your account has been created successfully, check your emails.";
+                        $this->messages[] = "Your account has been created, check your emails to verify.";
                         // return true for this function
                         $this->registration_successful = true; 
 

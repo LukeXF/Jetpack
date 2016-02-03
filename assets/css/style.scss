@@ -28,18 +28,23 @@ body {
         -webkit-transition: all .75s ease-in-out;
     }
 
-    input, select {
+    input, select, textarea, option {
         @extend .animate;
         margin: 10px 0;
         padding: 10px;
         border: 1px solid #ddd;
         width: 100%;
+        max-width: 100%;
+        border-radius: 1px !important;
+        min-width: 100%;
+        max-height: 200px;
+
+        &:focus {
+            outline-color: #222;
+            @extend .animate;
+        }
     }
 
-    input:focus {
-        outline-color: #222;
-        @extend .animate;
-    }
 
     .form-btn {
         text-align: right;
@@ -411,6 +416,15 @@ nav {
         padding: 20px;
     }
 
+    &.tile-store {
+        padding: 20px;
+        margin: 20px 0;
+
+        img {
+            max-width: 100%;
+            border: 1px solid #ccc;
+        }
+    }
     .table {
         th {
             font-weight: bold;

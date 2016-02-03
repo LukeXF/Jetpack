@@ -513,8 +513,8 @@ class siteFunctions
 
 			// alright, send user on their way.
 			echo "
-				<meta http-equiv='Refresh' content='0; " . $callback . $dotPHP . $and . "request=" . $request . "'>
-				<script>window.location = '" . $callback . $dotPHP . $and . "request=" . $request . ";</script>
+				<meta http-equiv='Refresh' content='0; " . $callback . $dotPHP . $and . "p=" . $request . "'>
+				<script>window.location = '" . $callback . $dotPHP . $and . "p=" . $request . ";</script>
 			";
 
 		} elseif ($callback == false) {
@@ -712,6 +712,13 @@ class siteFunctions
 		}
 	}
 
+	public function truncate($text, $length) {
+		$length = abs((int)$length);
+		if(strlen($text) > $length) {
+			$text = preg_replace("/^(.{1,$length})(\s.*|$)/s", '\\1...', $text);
+		}
+		return($text);
+	}
 
     /**
      *  Outputs a human time ago string rather than numbered time
