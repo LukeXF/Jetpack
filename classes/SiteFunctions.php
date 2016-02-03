@@ -53,7 +53,7 @@ class siteFunctions
 			} catch (PDOException $e) {
 
 				// If an error is catched, database connection failed
-				$this->errors[] = "Database connection problem.";
+				$this->callbackMessage(	$e->getMessage(), "danger");
 
 				// return false :(
 				return false;
@@ -188,9 +188,9 @@ class siteFunctions
 														WHERE `user_email` = :username");
 			} else {
 				// database query, getting all the info of the selected user
-				$query_user = $this->db_connection->prepare("SELECT `user_id`, `user_name`, `user_email`, `user_display_avatar`
+				$query_user = $this->db_connection->prepare("SELECT *
 														FROM `users`
-														WHERE `user_name` = :username OR `user_email` = :username");
+														WHERE `user_id` = :username OR `user_email` = :username");
 
 			}
 
@@ -210,6 +210,13 @@ class siteFunctions
 		}
 	}
 
+	/*
+	 * used to return all data relating to a user
+	 */
+	public function getAllUserData($user_id){
+		return $this->getUserData($user_id);
+	}
+
 
 	// Get User from ID (used in the news system and other database queries)
 	public function getUserDatafromID($username, $info = "user_name")
@@ -224,7 +231,7 @@ class siteFunctions
 		} else {
 
 			// If there is no error, output the the error function
-			$this->error('No user found');
+			$this->callbackMessage('No user found', "danger");
 		}
 	}
 
@@ -327,14 +334,32 @@ class siteFunctions
 
 
 	// debug function for error logging
-	public function debug($array) {
+	public function debug($array = false, $nameOfArray = false) {
 
-		// echo out html fomratting
-		echo "<pre>";
-		// print the array in an easy to read format
-		print_r($array);
-		// echo out close html formatting
-		echo "</pre>";
+		if ($array == false) {
+			// echo out html fomratting
+			echo "<pre>";
+			// print the array in an easy to read format
+			print_r("<b>POST ARRAY:</b><br>");
+			print_r($_POST);
+			print_r("<b>SESSION ARRAY:</b><br>");
+			print_r($_SESSION);
+			print_r("<b>GET ARRAY:</b><br>");
+			print_r($_GET);
+			// echo out close html formatting
+			echo "</pre>";
+		} else {
+			// echo out html fomratting
+			echo "<pre>";
+
+			if ($nameOfArray == true) {
+				print_r("<b>" . $nameOfArray . ":</b><br>");
+			}
+			// print the array in an easy to read format
+			print_r($array);
+			// echo out close html formatting
+			echo "</pre>";
+		}
 	}
 
 
@@ -350,7 +375,7 @@ class siteFunctions
 			if ($_SESSION['user_display_avatar'] == "Site Avatar") {
 				return $this->url("assets/img/avatar", array("pic" => $_SESSION['user_name']));
 			} else {
-				return $this->getGravatar($email, $size);
+				return $this->getGravatar($_SESSION['user_email'], $size);
 			}
 
 		} else {
@@ -636,7 +661,7 @@ class siteFunctions
 
 
 
-	function navbar($denavbar, $image = false, $pageQueryLinks = false){
+	public function navbar($denavbar, $image = false, $pageQueryLinks = false){
 		global $activeTab;
 		$i = 0;
 		foreach($denavbar as $x => $x_value) {
@@ -692,7 +717,7 @@ class siteFunctions
      *  Outputs a human time ago string rather than numbered time
      *
     **/
-    function timeAgo($ptime, $isMySQLDate = true){  // Past time as MySQL DATETIME value
+    public function timeAgo($ptime, $isMySQLDate = true){  // Past time as MySQL DATETIME value
 
 
 		if ($isMySQLDate) {
@@ -745,11 +770,213 @@ class siteFunctions
         }
     }
 
-	function clean($string) {
+	public function clean($string) {
 		$string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
 		$string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
 		return preg_replace('/-+/', ' ', $string); // Replaces multiple hyphens with single one.
 	}
+
+	public function ip_info($ip = NULL, $purpose = "location", $deep_detect = TRUE) {
+
+		if($ip == "127.0.0.1" || $ip == "localhost" || $ip == "::1") {
+			return "localhost";
+		}
+
+		$output = NULL;
+		if (filter_var($ip, FILTER_VALIDATE_IP) === FALSE) {
+			$ip = $_SERVER["REMOTE_ADDR"];
+			if ($deep_detect) {
+				if (filter_var(@$_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP))
+					$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+				if (filter_var(@$_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP))
+					$ip = $_SERVER['HTTP_CLIENT_IP'];
+			}
+		}
+		$purpose    = str_replace(array("name", "\n", "\t", " ", "-", "_"), NULL, strtolower(trim($purpose)));
+		$support    = array("country", "countrycode", "state", "region", "city", "location", "address");
+		$continents = array(
+			"AF" => "Africa",
+			"AN" => "Antarctica",
+			"AS" => "Asia",
+			"EU" => "Europe",
+			"OC" => "Australia (Oceania)",
+			"NA" => "North America",
+			"SA" => "South America"
+		);
+		if (filter_var($ip, FILTER_VALIDATE_IP) && in_array($purpose, $support)) {
+			$ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $ip));
+			if (@strlen(trim($ipdat->geoplugin_countryCode)) == 2) {
+				switch ($purpose) {
+					case "location":
+						$output = array(
+							"city"           => @$ipdat->geoplugin_city,
+							"state"          => @$ipdat->geoplugin_regionName,
+							"country"        => @$ipdat->geoplugin_countryName,
+							"country_code"   => @$ipdat->geoplugin_countryCode,
+							"continent"      => @$continents[strtoupper($ipdat->geoplugin_continentCode)],
+							"continent_code" => @$ipdat->geoplugin_continentCode
+						);
+						break;
+					case "address":
+						$address = array($ipdat->geoplugin_countryName);
+						if (@strlen($ipdat->geoplugin_regionName) >= 1)
+							$address[] = $ipdat->geoplugin_regionName;
+						if (@strlen($ipdat->geoplugin_city) >= 1)
+							$address[] = $ipdat->geoplugin_city;
+						$output = implode(", ", array_reverse($address));
+						break;
+					case "city":
+						$output = @$ipdat->geoplugin_city;
+						break;
+					case "state":
+						$output = @$ipdat->geoplugin_regionName;
+						break;
+					case "region":
+						$output = @$ipdat->geoplugin_regionName;
+						break;
+					case "country":
+						$output = @$ipdat->geoplugin_countryName;
+						break;
+					case "countrycode":
+						$output = @$ipdat->geoplugin_countryCode;
+						break;
+				}
+			}
+		}
+		return $output;
+	}
+
+	public function getBrowser($agent = null)
+	{
+
+		if ( empty($agent) ) {
+			global $_SERVER;
+			$agent = $_SERVER['HTTP_USER_AGENT'];
+		}
+
+		if ( stripos($agent, 'Firefox') !== false ) {
+			$browser['browser'] = 'firefox';
+		} elseif ( stripos($agent, 'MSIE') !== false ) {
+			$browser['browser'] = 'ie';
+		} elseif ( stripos($agent, 'Trident') !== false ) {
+			$browser['browser'] = 'ie';
+		} elseif ( stripos($agent, 'iPad') !== false ) {
+			$browser['browser'] = 'ipad';
+		} elseif ( stripos($agent, 'Android') !== false ) {
+			$browser['browser'] = 'android';
+		} elseif ( stripos($agent, 'Chrome') !== false ) {
+			$browser['browser'] = 'chrome';
+		} elseif ( stripos($agent, 'Safari') !== false ) {
+			$browser['browser'] = 'safari';
+		} elseif ( stripos($agent, 'AIR') !== false ) {
+			$browser['browser'] = 'air';
+		} elseif ( stripos($agent, 'Fluid') !== false ) {
+			$browser['browser'] = 'fluid';
+		}
+
+		if ( stripos($agent, 'Firefox') !== false ) {
+			$browser['icon'] = 'globe';
+		} elseif ( stripos($agent, 'MSIE') !== false ) {
+			$browser['icon'] = 'globe';
+		} elseif ( stripos($agent, 'Trident') !== false ) {
+			$browser['icon'] = 'globe';
+		} elseif ( stripos($agent, 'iPad') !== false ) {
+			$browser['icon'] = 'globe';
+		} elseif ( stripos($agent, 'Android') !== false ) {
+			$browser['icon'] = 'globe';
+		} elseif ( stripos($agent, 'Chrome') !== false ) {
+			$browser['icon'] = 'globe';
+		} elseif ( stripos($agent, 'Safari') !== false ) {
+			$browser['icon'] = 'globe';
+		} elseif ( stripos($agent, 'AIR') !== false ) {
+			$browser['icon'] = 'globe';
+		} elseif ( stripos($agent, 'Fluid') !== false ) {
+			$browser['icon'] = 'globe';
+		}
+
+		return $browser;
+	}
+
+	function getOS($agent = null) {
+
+
+		if ( empty($agent) ) {
+			global $_SERVER;
+			$agent = $_SERVER['HTTP_USER_AGENT'];
+		}
+
+
+		$os_array       =   array(
+			'/windows nt 10/i'     =>  'Windows 10',
+			'/windows nt 6.3/i'     =>  'Windows 8.1',
+			'/windows nt 6.2/i'     =>  'Windows 8',
+			'/windows nt 6.1/i'     =>  'Windows 7',
+			'/windows nt 6.0/i'     =>  'Windows Vista',
+			'/windows nt 5.2/i'     =>  'Windows Server 2003/XP x64',
+			'/windows nt 5.1/i'     =>  'Windows XP',
+			'/windows xp/i'         =>  'Windows XP',
+			'/windows nt 5.0/i'     =>  'Windows 2000',
+			'/windows me/i'         =>  'Windows ME',
+			'/win98/i'              =>  'Windows 98',
+			'/win95/i'              =>  'Windows 95',
+			'/win16/i'              =>  'Windows 3.11',
+			'/macintosh|mac os x/i' =>  'Mac OS X',
+			'/mac_powerpc/i'        =>  'Mac OS 9',
+			'/linux/i'              =>  'Linux',
+			'/ubuntu/i'             =>  'Ubuntu',
+			'/iphone/i'             =>  'iPhone',
+			'/ipod/i'               =>  'iPod',
+			'/ipad/i'               =>  'iPad',
+			'/android/i'            =>  'Android',
+			'/blackberry/i'         =>  'BlackBerry',
+			'/webos/i'              =>  'Mobile'
+		);
+		$icon_array       =   array(
+			'/windows nt 10/i'     =>  'windows',
+			'/windows nt 6.3/i'     =>  'windows',
+			'/windows nt 6.2/i'     =>  'windows',
+			'/windows nt 6.1/i'     =>  'windows',
+			'/windows nt 6.0/i'     =>  'windows',
+			'/windows nt 5.2/i'     =>  'windows',
+			'/windows nt 5.1/i'     =>  'windows',
+			'/windows xp/i'         =>  'windows',
+			'/windows nt 5.0/i'     =>  'windows',
+			'/windows me/i'         =>  'windows',
+			'/win98/i'              =>  'windows',
+			'/win95/i'              =>  'windows',
+			'/win16/i'              =>  'windows',
+			'/macintosh|mac os x/i' =>  'apple',
+			'/mac_powerpc/i'        =>  'apple',
+			'/linux/i'              =>  'linux',
+			'/ubuntu/i'             =>  'linux',
+			'/iphone/i'             =>  'apple',
+			'/ipod/i'               =>  'apple',
+			'/ipad/i'               =>  'apple',
+			'/android/i'            =>  'android',
+			'/blackberry/i'         =>  'mobile',
+			'/webos/i'              =>  'mobile'
+		);
+
+		foreach ($os_array as $regex => $value) {
+
+			if (preg_match($regex, $agent)) {
+				$os_platform['os']    =   $value;
+			}
+
+		}
+		foreach ($icon_array as $regex => $value) {
+
+			if (preg_match($regex, $agent)) {
+				$os_platform['icon']    =   $value;
+			}
+
+		}
+
+		return $os_platform;
+
+	}
+
+
 
 }
 

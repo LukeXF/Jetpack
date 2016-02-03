@@ -1,10 +1,11 @@
 <div class="container">
     <div class="row">
         <?php
-        $weather->getWeather();
+        // $weather->getWeather();
         // $payments->testPayment();
         ?>
         <div class="col-md-9">
+            <?php $siteFunctions->displayCallbackMessage(); ?>
           <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
             <form id="checkout" method="post">
                 <div id="payment-form"></div>

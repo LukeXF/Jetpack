@@ -211,6 +211,10 @@ nav {
       margin: 0 0 10px;
       padding: 21px 0 0;
       text-align: right; }
+    .modal .modal-body .flag-icon {
+      border-radius: 2px; }
+  .modal .modal-lg .modal-content {
+    max-width: none; }
 
 .modal-open {
   overflow: auto; }

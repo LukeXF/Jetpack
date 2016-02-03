@@ -344,6 +344,17 @@ nav {
             padding: 21px 0 0;
             text-align: right;
         }
+
+        .flag-icon {
+            border-radius: 2px;
+        }
+    }
+
+    .modal-lg {
+        .modal-content {
+            max-width: none;
+
+        }
     }
 
 }
