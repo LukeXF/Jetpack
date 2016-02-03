@@ -308,6 +308,7 @@ class adminUsers extends siteFunctions
     private function loginHistoryModal($user) {
 
         global $_SESSION;
+        $history = $this->getLoginHistory($user['user_id']);
 
         echo "
             <div class='modal fade' id='loginHistoryModal" . $user['user_id'] . "' tabindex='-1' role='dialog' aria-labelledby='#loginHistoryModal" . $user['user_id'] . "'>
@@ -321,6 +322,10 @@ class adminUsers extends siteFunctions
                                 It can help identify if the account is been hijacked </p>
                             </div>
                             <div class='modal-body'>
+        ";
+
+        if (count($history) > 0) {
+            echo "
 
                             <table class='table table-striped table-hover'>
                                 <thead>
@@ -333,30 +338,33 @@ class adminUsers extends siteFunctions
                                     </tr>
                                 </thead>
                                 <tbody>
-        ";
-
-        $history = $this->getLoginHistory($user['user_id']);
-        for ($i = (count($history) - 1); $i >= 0; $i--) {
-
-            $country_name = $this->ip_info($history[$i]['history_ip'], "Country");
-            $country_code = $this->ip_info($history[$i]['history_ip'], "countrycode");
-            $browser = $this->getBrowser($history[$i]['history_http_user_agent']);
-            $os = $this->getOS($history[$i]['history_http_user_agent']);
-            $timeAgo = date('d M H:i', strtotime($history[$i]['history_date']));
+            ";
 
 
-            echo "
+            for ($i = (count($history) - 1); $i >= 0; $i--) {
+
+                $country_name = $this->ip_info($history[$i]['history_ip'], "Country");
+                $country_code = $this->ip_info($history[$i]['history_ip'], "countrycode");
+                $browser = $this->getBrowser($history[$i]['history_http_user_agent']);
+                $os = $this->getOS($history[$i]['history_http_user_agent']);
+                $timeAgo = date('d M H:i', strtotime($history[$i]['history_date']));
+
+                echo "
                                     <tr>
                                         <td data-sort-value='" . $history[$i]['history_date'] . "'>" . $timeAgo . "</td>
                                         <td data-sort-value='" . $country_name . "'> <span class='flag-icon flag-icon-" . $country_code . "'></span> " . $country_name . "</td>
                                         <td>" . $history[$i]['history_http_referer'] . "</td>
-                                        <td><i class='btl bt-" . $browser['icon'] . "'></i> ". $browser['browser'] . "</td>
-                                        <td><i class='fab fab-" . $os['icon'] . "'></i> ". $os['os'] . "</td>
+                                        <td><i class='btl bt-" . $browser['icon'] . "'></i> " . $browser['browser'] . "</td>
+                                        <td><i class='fab fab-" . $os['icon'] . "'></i> " . $os['os'] . "</td>
                                     </tr>";
-        }
-        echo "
+            }
+            echo "
                                 </tbody>
                             </table>
+            ";
+
+        }
+        echo "
                             </div>
                             <div class='modal-footer'>
                                 <input type='hidden' name='user_id' value='" . $user['user_id'] . "'>
