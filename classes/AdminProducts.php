@@ -39,7 +39,7 @@ class adminProducts extends siteFunctions
         }
     }
 
-    /*
+     /*
       * Display all of the users data.
       *
       * Checks to see if the data is present and then displays each user

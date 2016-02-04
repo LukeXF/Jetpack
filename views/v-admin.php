@@ -20,6 +20,7 @@ if (!empty($_GET['p'])) {
         $adminProducts = new adminProducts();
         $select_tab = 'views/admin/a-products.php';
     } elseif ($activeTab == 'notifications'){
+        $adminOrders = new adminOrders();
         $select_tab = 'views/admin/a-orders.php';
     } elseif ($activeTab == 'subscriptions'){
         $select_tab = 'views/admin/a-subscriptions.php';

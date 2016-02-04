@@ -1024,38 +1024,6 @@ class Store extends siteFunctions
         </select>';
     }
 
-    private function getAddress($address_type, $searchForID = false)
-    {
-        // if database connection opened
-        if ($this->databaseConnection()) {
-
-            if (!$searchForID) {
-                $sql = $this->db_connection->prepare("SELECT * FROM `addresses` WHERE `address_type` = :address_type OR `address_type` = 'Billing & Shipping'");
-                $sql->bindValue(':address_type', $address_type, PDO::PARAM_STR);
-            } else {
-                $sql = $this->db_connection->prepare("SELECT * FROM `addresses` WHERE `address_id` = :address_id");
-                $sql->bindValue(':address_id', $address_type, PDO::PARAM_INT);
-            }
-
-            // load pages for the user
-            $sql->execute();
-            $sql = $sql->fetchAll();
-
-            // $this->debug($sql);
-
-            if (isset($sql)) {
-                return $sql;
-            } else {
-                return false;
-            }
-
-        } else {
-
-            return false;
-
-        }
-    }
-
     public function addNewAddress($data)
     {
         if ($this->databaseConnection()) {

@@ -16,6 +16,8 @@ if (!empty($_GET['p'])) {
     } else {
         $select_tab = 'views/orders/o-new.php';
     }
+} elseif (!empty($_GET['product'])) {
+    $select_tab = 'views/orders/o-id.php';
 } else {
     $select_tab = 'views/orders/o-new.php';
 }

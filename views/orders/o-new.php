@@ -7,14 +7,7 @@
         </p>
     </div>
     <?php
-
-    if (isset($_GET['product'])) {
-        $orders->displayProduct($_GET['product']);
-    } else {
         $orders->displayOrders();
-        // $store->debug();
-    }
-
     ?>
 </div>
 <script>

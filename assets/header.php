@@ -11,6 +11,7 @@
 	require_once('classes/Orders.php');
 	require_once('classes/AdminUsers.php');
 	require_once('classes/AdminProducts.php');
+	require_once('classes/AdminOrders.php');
 
 
 	// initialize classes
