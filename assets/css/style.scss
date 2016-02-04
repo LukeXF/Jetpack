@@ -142,7 +142,9 @@ body {
         -webkit-border-radius: 20px;
         -moz-border-radius: 20px;
         border-radius: 20px;
+        max-width: 20px !important;
         border: transparent;
+        min-width: 16px !important;
     }
 
     input.box {

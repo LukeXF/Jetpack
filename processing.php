@@ -56,6 +56,7 @@
             if ($_POST['process'] == "completeOrder") {
                 $store->generateToken();
                 $result = $store->pay($_POST);
+                $orders->insertOrder($result, $_POST);
                 $siteFunctions->callback("orders");
             }
         }

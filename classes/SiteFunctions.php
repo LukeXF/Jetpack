@@ -990,6 +990,11 @@ class siteFunctions
 	}
 
 
+	public function log($message){
+		echo "<script>console.log('" . $message . "')</script>";
+	}
+
+
 
 }
 

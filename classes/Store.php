@@ -19,6 +19,8 @@ class Store extends siteFunctions
     {
         global $_SESSION;
 
+        $this->debug($_SESSION);
+
         $billingAddress = $this->getAddress($data['billingAddress'], true)[0];
         $shippingAddress = $this->getAddress($data['shippingAddress'], true)[0];
 
@@ -51,12 +53,6 @@ class Store extends siteFunctions
                 'submitForSettlement' => true
             ]
         ]);
-
-        if ($sale->success) {
-            $this->callbackMessage("Success ID: " . $sale->transaction->id, "success");
-        } else {
-            $this->callbackMessage("Error Message: " . $sale->message, "danger");
-        }
 
         return $sale;
 
