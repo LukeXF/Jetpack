@@ -219,14 +219,18 @@ class siteFunctions
 
 
 	// Get User from ID (used in the news system and other database queries)
-	public function getUserDatafromID($username, $info = "user_name")
+	public function getUserDataFromID($username, $info = false)
 	{
 		// search by user ID to get the returned object of the user data
 		// the true is set to search by ID and not username or email
 		if ($this->getUserData($username, "id") != false) {
 
 			// output the desired user data
-			return $this->getUserData($username, "id")->$info;
+			if ($info) {
+				return $this->getUserData($username, "id")->$info;
+			} else {
+				return $this->getUserData($username, "id");
+			}
 
 		} else {
 
