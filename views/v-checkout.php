@@ -9,14 +9,16 @@
                 $siteFunctions->debug();
             } else {
                 $store->generateToken();
-                $result = $store->pay($_POST['payment_method_nonce']);
-                $siteFunctions->debug($result);
+                $result = $store->pay($_POST);
+                //$siteFunctions->debug($result);
                 $siteFunctions->debug();
 
                 if ($result->success) {
-                    print_r("Success ID: " . $result->transaction->id);
+                    $siteFunctions->callbackMessage("Success ID: " . $result->transaction->id, "success");
+                    $siteFunctions->displayCallbackMessage();
                 } else {
-                    print_r("Error Message: " . $result->message);
+                    $siteFunctions->callbackMessage("Error Message: " . $result->message, "danger");
+                    $siteFunctions->displayCallbackMessage();
                 }
             }
 

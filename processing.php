@@ -52,6 +52,12 @@
                 $store->applyCoupon($_POST['coupon']);
                 $siteFunctions->callback("checkout");
             }
+
+            if ($_POST['process'] == "completeOrder") {
+                $store->generateToken();
+                $result = $store->pay($_POST);
+                $siteFunctions->callback("orders");
+            }
         }
 
         if (isset($_GET['removeItem'])) {

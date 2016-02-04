@@ -8,6 +8,7 @@
 	require_once('classes/Weather.php');
 	require_once('classes/ImageUpload.php');
 	require_once('classes/Store.php');
+	require_once('classes/Orders.php');
 	require_once('classes/AdminUsers.php');
 	require_once('classes/AdminProducts.php');
 
@@ -21,12 +22,14 @@
 		$weather = new Weather();
 		$imageUpload = new imageUpload();
 		$store = new Store();
+		$orders = new Orders();
 		$avatar = $siteFunctions->getAvatar();
 		// $siteFunctions->debug($_SESSION);
 
 		$navbar = array(
-			"Home" 	=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url()),
-			"Store" 	=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url("store") )
+			"Home" 		=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url()),
+			"Store" 	=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url("store") ),
+			"Orders" 	=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url("orders") )
 		);
 
 		if (isset($_SESSION['user_account_type']) && $_SESSION['user_account_type'] == "admin") {
