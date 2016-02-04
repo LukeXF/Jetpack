@@ -19,7 +19,7 @@ class Store extends siteFunctions
     {
 
         global $_SESSION;
-        $result = Braintree_Transaction::sale([
+        return Braintree_Transaction::sale([
             'amount' => '10.00',
             'paymentMethodNonce' => $nonce,
             'shipping' => [
@@ -38,7 +38,6 @@ class Store extends siteFunctions
             ]
         ]);
 
-        $this->debug($result);
     }
 
     /*
@@ -183,6 +182,9 @@ class Store extends siteFunctions
           <script src="https://js.braintreegateway.com/v2/braintree.js"></script>
             <form id="checkout" method="post">
                 <div id="payment-form"></div>
+                <input type="hidden" name="test" value="test">
+                <input type="hidden" name="billingAddress" id="billingAddress">
+                <input type="hidden" name="shippingAddress" id="shippingAddress">
                 <input type="submit" value="Pay ' . $amount . '">
             </form>
 
@@ -377,7 +379,9 @@ class Store extends siteFunctions
                         </tr>
                         <tr>
                             <td colspan="2">
-                            <a href="' . $this->url("checkout") . '" class="btn btn-black"><b>Pay ' . $currency . number_format($amountOfItems * 5.45 + $pricing, 2) . '</b></a>
+            ';
+            $this->checkoutForm($currency . number_format($amountOfItems * 5.45 + $pricing, 2));
+            echo '
                             </td>
                         </tr>
                     </table>
@@ -468,7 +472,6 @@ class Store extends siteFunctions
                 $this->grandTotal($totalProducts, $totalPrice, 1);
             }
         }
-        $this->debug();
     }
 
     public function removeItemFromCart($item)
@@ -675,7 +678,7 @@ class Store extends siteFunctions
             <div class="col-md-12">
                 <div class="tile tile-checkout">
                     <div class="tile-padding">
-                        <b>Shipping Address</b>
+                        <b>Shipping Address</b> (Select One)
                         <div class="row">
         ';
         $this->displayAddress();
@@ -703,6 +706,7 @@ class Store extends siteFunctions
                          // alert(".address_id" + id);
                          $(".' . $account_type . '").removeClass("selected");
                          $(".' . $account_type . '.address_id" + id).addClass("selected");
+                         $( "#billingAddress" ).val(id);
                     }
                 </script>
             ';
@@ -716,6 +720,7 @@ class Store extends siteFunctions
                          // alert(".address_id" + id);
                          $(".' . $account_type . '").removeClass("selected");
                          $(".' . $account_type . '.address_id" + id).addClass("selected");
+                         $( "#shippingAddress" ).val(id);
                     }
                 </script>
             ';
@@ -1064,6 +1069,6 @@ VALUES(:address_user, :address_first_name, :address_last_name, :address_company_
             }
         }
     }
-}
 
+}
 ?>
