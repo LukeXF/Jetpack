@@ -59,6 +59,11 @@
                 $orders->insertOrder($result, $_POST);
                 $siteFunctions->callback("orders");
             }
+
+            if ($_POST['process'] == "email") {
+                $orders->email($_POST['emailType'], $_POST);
+                $siteFunctions->callback();
+            }
         }
 
         if (isset($_GET['removeItem'])) {

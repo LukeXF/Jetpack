@@ -1,10 +1,10 @@
 <?php
 
 $navbar = array(
-    "Users" 	=> array( "active" => "", "logo" => "user",	 	 	"tooltip"=>"", "url" => "users"),
-    "Products" 	=> array( "active" => "", "logo" => "shopping-cart", 	"tooltip"=>"", "url" => "products"),
-    "Orders" 	=> array( "active" => "", "logo" => "inbox", 	 	"tooltip"=>"", "url" => "notifications"),
-    "Subscriptions" 	=> array( "active" => "", "logo" => "key", 	 		"tooltip"=>"review previous invoices", "url" => "subscriptions")
+    "Users" 	=> array( "active" => "", "logo" => "user",	 	 	    "tooltip"=>"view and control users on your site", "url" => "users"),
+    "Products" 	=> array( "active" => "", "logo" => "shopping-cart", 	"tooltip"=>"view and edit products you sell", "url" => "products"),
+    "Orders" 	=> array( "active" => "", "logo" => "inbox", 	 	    "tooltip"=>"view placed orders", "url" => "notifications"),
+    "Subscriptions" 	=> array( "active" => "", "logo" => "key", 	 	"tooltip"=>"review subscriptions", "url" => "subscriptions")
 );
 if ( empty($_GET['p']) ) {
     $activeTab = "users";

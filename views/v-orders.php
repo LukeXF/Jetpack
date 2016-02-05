@@ -1,8 +1,8 @@
 <?php
 
 $navbar = array(
-    "Open Orders" 	    => array( "active" => "", "logo" => "shopping-cart", 	"tooltip"=>"", "url" => "open"),
-    "All Orders" 	    => array( "active" => "", "logo" => "sitemap",	 	    "tooltip"=>"", "url" => "all")
+    "All Orders" 	    => array( "active" => "", "logo" => "shopping-cart", 	"tooltip"=>"", "url" => "open") /*,
+    "All Orders" 	    => array( "active" => "", "logo" => "sitemap",	 	    "tooltip"=>"", "url" => "all") */
 );
 if ( empty($_GET['p']) ) {
     $activeTab = "open";

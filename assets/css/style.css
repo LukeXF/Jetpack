@@ -360,4 +360,13 @@ nav {
 .tile-cart-order .table .table-grey {
   background: #f9f9f9; }
 
+.box {
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  background: #F4F4F4;
+  padding: 20px; }
+  .box img {
+    width: 30px;
+    border-radius: 50px; }
+
 /*# sourceMappingURL=style.css.map */

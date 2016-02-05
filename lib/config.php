@@ -2,8 +2,8 @@
 
 	$brand = "VSGaming"; // The name displayed across the site
 	$email = "me@luke.sx"; // The address used through Mandrill to send emails and PayPal Payments
-	$currency = "&pound;";
-	$mandrillTemplateName = "Test"; // the template styling name for the emails
+	$currency = "£";
+	$mandrillTemplateName = "vsDashboard"; // the template styling name for the emails
 	$mandrillAPIKey = "f3aumBm_dMe6Inv3vTWD7w"; // the API key for Mandrill servers
 	date_default_timezone_set('GMT'); // timezone setting for the site
 

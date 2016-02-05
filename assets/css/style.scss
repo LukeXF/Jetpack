@@ -587,3 +587,15 @@ nav {
         }
     }
 }
+
+.box {
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    background: #F4F4F4;
+    padding: 20px;
+    img {
+        width: 30px;
+        border-radius: 50px;
+    }
+
+}

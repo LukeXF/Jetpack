@@ -231,10 +231,34 @@ VALUES(:items_order_id, :items_product_id, :items_name, :items_price, :items_qua
             }
 
         } else {
-            $orders = $this->getOrders($_SESSION['user_id'], true)[0];
+            $orders = $this->getOrders($specificOrder)[0];
             $orderItems = $this->getOrderItems($specificOrder);
             $shippingAddress = $this->getAddress($orders['order_shipping_address'], true)[0];
             $billingAddress = $this->getAddress($orders['order_billing_address'], true)[0];
+
+
+            // if the order does not belong to the user, redirect back to orders overview
+            if ($_SESSION['user_id'] != $orders['order_user']) {
+
+                // if admin
+                if ($_SESSION['user_account_type'] == "admin") {
+                    $userDetails = $this->getUserDataFromID($orders['order_user']);
+                    echo '
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2">
+                                <div class="box">
+                                ' .  '
+                                    <img src="' . $this->getAvatar($userDetails->user_email) . '">
+                                    Please note that you are logged in as an admin viewing an order belonging to ' . $userDetails->user_name . ' (' . $userDetails->user_email . ')
+                                </div>
+                            </div>
+                        </div>
+                    ';
+                } else {
+                    die($this->callback("orders"));
+                }
+            }
+
 
             echo '
                 <div class="row">
@@ -285,8 +309,6 @@ VALUES(:items_order_id, :items_product_id, :items_name, :items_price, :items_qua
         }
     }
 
-
-
     private function displayOrderItems($orderItems, $shippingTotal, $subTotal)
     {
         global $currency;
@@ -330,4 +352,105 @@ VALUES(:items_order_id, :items_product_id, :items_name, :items_price, :items_qua
             </div>
         </div>';
     }
+
+    public function email($emailType, $postData)
+    {
+        global $brand;
+        global $currency;
+
+        $vars['user_name'] = $postData['emailData']['user_full_name'];
+        $vars['user_id'] = $postData['emailData']['user_id'];
+        $vars['user_email'] = $postData['emailData']['user_email'];
+
+        if ($emailType == "dispatched") {
+            $order_id = 'jm3dgj';
+
+            $order_info = $this->getOrders($order_id);
+
+            $vars['subject']    = $brand . ' - Order '  . strtoupper($order_id) . ' dispatched';
+            $vars['to']         = array('email' => $vars['user_email'], 'name' => $vars['user_name']);
+            $vars['intro']      = "Order Update";
+            $vars['header']     = "Your order has been dispatched";
+            $vars['text']       = "Hi again James, this is just a quick email to let you know that your order has now been dispatched. Click the button below to view it on our website.";
+            $vars['link']       = $this->url("orders", array('product'=>$order_id));
+            $vars['button']     = "View Order";
+            $vars['shipping']   = $currency . $order_info[0]['order_shipping_total'];
+            $vars['total']      = $currency . $order_info[0]['order_grand_total'];
+
+            $order = $this->getOrderItems($order_id);
+            for ($i = 0; $i < count($order); $i++) {
+                $vars['orders'][$i]['item_image']       = $this->getProductInfo($order[$i]['items_product_id'])[0]['product_image_one'];
+                $vars['orders'][$i]['item_quantity']    = $order[$i]['items_quantity'];
+                $vars['orders'][$i]['item_name']        = $order[$i]['items_name'];
+                $vars['orders'][$i]['item_price']       = $currency . $order[$i]['items_price'];
+            }
+
+        }
+
+        $this->sendEmail($vars);
+    }
+
+    private function sendEmail($merge_vars) {
+        require 'lib/mandrill/src/Mandrill.php';
+        $mandrill = new Mandrill($GLOBALS['mandrillAPIKey']);
+        $message = array(
+            'subject' => $merge_vars['subject'],
+            'from_email' => $GLOBALS['email'],
+            'from_name' => 'The ' . $GLOBALS['brand'] . ' Team',
+            'to' => array($merge_vars['to']),
+            'merge_language' => 'handlebars',
+            'global_merge_vars' => array(
+                array('name' => 'intro', 'content' => $merge_vars['intro']),
+                array('name' => 'header', 'content' => $merge_vars['header']),
+                array('name' => 'text', 'content' => $merge_vars['text']),
+                array('name' => 'link', 'content' => $merge_vars['link']),
+                array('name' => 'button', 'content' => $merge_vars['button']),
+                array("name" => "products", "content" => $merge_vars['orders']),
+                array('name' => 'shipping', 'content' => $merge_vars['shipping']),
+                array('name' => 'total', 'content' => $merge_vars['total'])
+            )
+        );
+
+        $template_name = $GLOBALS['mandrillTemplateName'];
+        $template_content = array();
+        $returned_message = $mandrill->messages->sendTemplate($template_name, $template_content, $message);
+
+        if($returned_message[0]['status'] == "sent") {
+            return true;
+        } else {
+            $this->callbackMessage("Email failed to send - " . $returned_message['message'], "danger");
+            return false;
+        }
+
+    }
+
+    /*
+* Loads all user data from table
+*/
+    private function getProductInfo($product_id)
+    {
+        // if database connection opened
+        if ($this->databaseConnection()) {
+
+            $sql = $this->db_connection->prepare("SELECT * FROM `products` WHERE `product_id` = :product_id");
+            $sql->bindValue(':product_id', $product_id, PDO::PARAM_INT);
+
+            $sql->execute();
+            $sql = $sql->fetchAll();
+
+            // $this->debug($sql);
+
+            if (isset($sql)) {
+                return $sql;
+            } else {
+                return false;
+            }
+
+        } else {
+
+            return false;
+
+        }
+    }
+
 }

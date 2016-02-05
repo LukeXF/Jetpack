@@ -6,7 +6,7 @@
     </div>
     <div class="col-md-4 tile-dark">
         <div class="form-btn-center">
-            <button type="button" class="btn btn-default">-</button>
+            <button type="button" class="btn btn-default">Coming Soon</button>
         </div>
     </div>
 </div>

@@ -39,7 +39,7 @@ class Login extends siteFunctions
 
 
             // if user has an active session on the server
-        } elseif (!empty($_SESSION['user_name']) && ($_SESSION['user_logged_in'] == 1)) {
+        } elseif (!empty($_SESSION['user_name']) && (isset($_SESSION['user_logged_in'])) && ($_SESSION['user_logged_in'] == 1)) {
 
             // PLACE FUNCTIONS HERE FOR IF THE USER IS LOGGED IN
 

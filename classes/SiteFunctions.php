@@ -196,7 +196,7 @@ class siteFunctions
 
 			// prepared statement for the username
 			$query_user->bindValue(':username', $username, PDO::PARAM_STR);
-			// excute username
+			// execute username
 			$query_user->execute();
 
 			// get result row (as an object)

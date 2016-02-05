@@ -49,7 +49,6 @@ class adminOrders extends siteFunctions
 
         global $currency;
         $orders = $this->getAllOrders();
-        $this->debug($orders);
         if ($orders != false) {
             echo '<table class="table table-striped table-hover">
             <thead>
