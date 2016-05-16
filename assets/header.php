@@ -1,7 +1,11 @@
 <?php
 
+$mtime = microtime();
+$mtime = explode(" ",$mtime);
+$mtime = $mtime[1] + $mtime[0];
+$starttime = $mtime;
 
-	// load classes
+// load classes
 	require_once('lib/config.php');
 	require_once('classes/siteFunctions.php');
 	require_once('classes/Login.php');
@@ -17,12 +21,12 @@
 	// initialize classes
 	$siteFunctions = new siteFunctions();
 	$login = new Login();
+	$weather = new Weather();
+	$imageUpload = new imageUpload();
+	$store = new Store();
 
 	if ($login->isUserLoggedIn() == true) {
 
-		$weather = new Weather();
-		$imageUpload = new imageUpload();
-		$store = new Store();
 		$orders = new Orders();
 		$avatar = $siteFunctions->getAvatar();
 		// $siteFunctions->debug($_SESSION);
@@ -38,6 +42,12 @@
 		}
 
 
+	} else {
+
+		$navbar = array(
+			"Home" 		=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url()),
+			"Store" 	=> array( "active" => "", "logo" => "flaticon-two114",	 	"url" => $siteFunctions->url("store") )
+		);
 	}
 
 ?>
@@ -55,7 +65,7 @@
 		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/weather-icons.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat'>
-		<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/style.css">
 		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/flag-icon.min.css">
 		<link rel="stylesheet" type="text/css" href="<?php echo $domain; ?>assets/css/black-tie.min.css">

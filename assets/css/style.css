@@ -9,7 +9,7 @@ body {
     background-color: white;
     padding: 20px auto;
     margin-bottom: 40px; }
-  body .animate, body input, body select, body textarea, body option, body input:focus, body select:focus, body textarea:focus, body option:focus, body .btn-black, body .btn-black:hover, body .tile-checkout .tile-address, .tile-checkout body .tile-address, body .tile-cart .tile-address, .tile-cart body .tile-address, body .tile-checkout .tile-address:hover, .tile-checkout body .tile-address:hover, body .tile-cart .tile-address:hover, .tile-cart body .tile-address:hover, body .tile-checkout .tile-address.selected, .tile-checkout body .tile-address.selected, body .tile-cart .tile-address.selected, .tile-cart body .tile-address.selected, body .animate:hover, body input:hover, body select:hover, body textarea:hover, body option:hover, body .btn-black:hover, body .tile-checkout .tile-address:hover, .tile-checkout body .tile-address:hover, body .tile-cart .tile-address:hover, .tile-cart body .tile-address:hover, body .animate:focus, body input:focus, body select:focus, body textarea:focus, body option:focus, body .btn-black:focus, body .tile-checkout .tile-address:focus, .tile-checkout body .tile-address:focus, body .tile-cart .tile-address:focus, .tile-cart body .tile-address:focus, body .animate:active, body input:active, body select:active, body textarea:active, body option:active, body .btn-black:active, body .tile-checkout .tile-address:active, .tile-checkout body .tile-address:active, body .tile-cart .tile-address:active, .tile-cart body .tile-address:active {
+  body .animate, body input, body select, body textarea, body option, body input:focus, body select:focus, body textarea:focus, body option:focus, body .btn-black, body .btn-black:hover, body nav.navbar-homepage .navbar-nav > li > a, nav.navbar-homepage body .navbar-nav > li > a, body .tile-checkout .tile-address, .tile-checkout body .tile-address, body .tile-cart .tile-address, .tile-cart body .tile-address, body .tile-checkout .tile-address:hover, .tile-checkout body .tile-address:hover, body .tile-cart .tile-address:hover, .tile-cart body .tile-address:hover, body .tile-checkout .tile-address.selected, .tile-checkout body .tile-address.selected, body .tile-cart .tile-address.selected, .tile-cart body .tile-address.selected, body .animate:hover, body input:hover, body select:hover, body textarea:hover, body option:hover, body .btn-black:hover, body nav.navbar-homepage .navbar-nav > li > a:hover, nav.navbar-homepage body .navbar-nav > li > a:hover, body .tile-checkout .tile-address:hover, .tile-checkout body .tile-address:hover, body .tile-cart .tile-address:hover, .tile-cart body .tile-address:hover, body .animate:focus, body input:focus, body select:focus, body textarea:focus, body option:focus, body .btn-black:focus, body nav.navbar-homepage .navbar-nav > li > a:focus, nav.navbar-homepage body .navbar-nav > li > a:focus, body .tile-checkout .tile-address:focus, .tile-checkout body .tile-address:focus, body .tile-cart .tile-address:focus, .tile-cart body .tile-address:focus, body .animate:active, body input:active, body select:active, body textarea:active, body option:active, body .btn-black:active, body nav.navbar-homepage .navbar-nav > li > a:active, nav.navbar-homepage body .navbar-nav > li > a:active, body .tile-checkout .tile-address:active, .tile-checkout body .tile-address:active, body .tile-cart .tile-address:active, .tile-cart body .tile-address:active {
     transition: all .25s ease-in-out;
     -moz-transition: all .25s ease-in-out;
     -webkit-transition: all .25s ease-in-out; }
@@ -41,6 +41,30 @@ body {
   body .btn-black:hover {
     background-color: #333;
     border: 1px solid #222; }
+  body .container-header {
+    margin: -140px 0 20px;
+    padding: 75px 0 0;
+    background: url("../img/bg.png") center;
+    background-size: cover !important; }
+    body .container-header h1 {
+      padding: 100px 0;
+      color: white; }
+  body .container-promo .row > div {
+    padding: 10px;
+    color: white;
+    margin-top: -20px; }
+    body .container-promo .row > div .promo {
+      background: #000;
+      margin: -10px -8px 0;
+      padding: 1px 10px 10px 50%; }
+      body .container-promo .row > div .promo h2 {
+        font-weight: 100; }
+    body .container-promo .row > div:first-of-type .promo {
+      margin-left: -15px; }
+    body .container-promo .row > div:last-of-type .promo {
+      margin-right: -10px; }
+    body .container-promo .row > div:nth-child(even) .promo {
+      background: #053368; }
 
 .contentbox {
   background-color: rgba(255, 255, 255, 0.95);
@@ -127,15 +151,17 @@ body {
     text-align: center; }
 
 nav {
-  background-color: white !important; }
-  nav .navbar-brand > img {
-    height: 100%;
-    margin-top: 0; }
+  background-color: white; }
+  nav .navbar-header {
+    padding-left: 22px; }
+    nav .navbar-header .navbar-brand > img {
+      margin-top: 0;
+      height: 100%; }
   nav img.nav-image {
     display: -webkit-inline-box;
-    height: 40px;
-    margin: -20px 10px -20 0;
-    border-radius: 50px; }
+    height: 22px;
+    margin: -22px -10px -20 0;
+    border-radius: 5px; }
   nav .navbar-nav > li > a {
     padding-top: 25px;
     padding-bottom: 25px;
@@ -154,6 +180,39 @@ nav {
   nav .nav-checkout {
     margin: -9px -2px -7px;
     text-align: right; }
+  nav.navbar-mini {
+    background: #fff;
+    height: 40px;
+    min-height: 40px;
+    margin-bottom: 0; }
+    nav.navbar-mini .navbar-nav > li a {
+      padding: 10px 10px;
+      font-size: 15px;
+      border-right: 1px solid #ddd;
+      color: #999; }
+    nav.navbar-mini .navbar-nav > li:last-of-type a {
+      border-right: transparent; }
+  nav.navbar-homepage {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: transparent;
+    color: white; }
+    nav.navbar-homepage .navbar-nav > .active > a,
+    nav.navbar-homepage .navbar-nav > .active > a:hover,
+    nav.navbar-homepage .navbar-nav > .active > a:focus {
+      color: white; }
+    nav.navbar-homepage .navbar-nav > li > a {
+      color: #eee; }
+      nav.navbar-homepage .navbar-nav > li > a:hover {
+        color: white; }
+    nav.navbar-homepage.navbar-mini {
+      background: rgba(32, 32, 32, 0.3); }
+      nav.navbar-homepage.navbar-mini .navbar-nav > li a {
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ddd; }
+        nav.navbar-homepage.navbar-mini .navbar-nav > li a:hover {
+          color: white; }
+      nav.navbar-homepage.navbar-mini .navbar-nav > li:last-of-type a {
+        border-right: transparent; }
 
 .nav-tiles .title {
   font-size: 20px; }
@@ -368,5 +427,9 @@ nav {
   .box img {
     width: 30px;
     border-radius: 50px; }
+
+footer {
+  background: #222;
+  color: white; }
 
 /*# sourceMappingURL=style.css.map */

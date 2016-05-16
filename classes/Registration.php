@@ -56,7 +56,7 @@ class Registration
 
             } catch (PDOException $e) {
 
-                // If an error is catched, database connection failed
+                // If an error is caught, database connection failed
                 $this->errors[] = "Database connection problem." . $e;
 
                 // return false :(
@@ -138,7 +138,7 @@ class Registration
 
 
 
-                // loop through the returned query and compare it agains the entered data
+                // loop through the returned query and compare it against the entered data
                 for ($i = 0; $i < count($result); $i++) {
 
                     // if the check is there, then display error

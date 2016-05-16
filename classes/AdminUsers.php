@@ -343,8 +343,10 @@ class adminUsers extends siteFunctions
 
             for ($i = (count($history) - 1); $i >= 0; $i--) {
 
-                $country_name = $this->ip_info($history[$i]['history_ip'], "Country");
-                $country_code = $this->ip_info($history[$i]['history_ip'], "countrycode");
+                //$country_name = $this->ip_info($history[$i]['history_ip'], "Country");
+                //$country_code = $this->ip_info($history[$i]['history_ip'], "countrycode");
+                $country_name = "todo";
+                $country_code = "todo";
                 $browser = $this->getBrowser($history[$i]['history_http_user_agent']);
                 $os = $this->getOS($history[$i]['history_http_user_agent']);
                 $timeAgo = date('d M H:i', strtotime($history[$i]['history_date']));

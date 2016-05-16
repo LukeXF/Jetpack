@@ -78,6 +78,7 @@ class siteFunctions
 			// override page the page name
 			// useful to use if there is a page like password-reset and you want to name it 'Forgot Password'
 			$pageName = $GLOBALS['overrideTitleName'];
+			$GLOBALS['onHomePage'] = true;
 
 
 		// if we're on the home page then assume we want to call the index page home
@@ -85,7 +86,7 @@ class siteFunctions
 
 			// then name the title
 			$pageName = "Home";
-
+			$GLOBALS['onHomePage'] = true;
 
 		}
 

@@ -1,3 +1,36 @@
+<div class="container-header">
+    <div class="container">
+        <h1>Home</h1>
+    </div>
+</div>
+<div class="container-promo container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="promo">
+                <h2>abcde <b>2016</b></h2>
+                <p>h</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="promo">
+                <h2>test</h2>
+                <p>h</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="promo">
+                <h2>Hey There</h2>
+                <p>h</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="promo">
+                <h2>Hey There</h2>
+                <p>h</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container">
     <div class="row">
         <?php
@@ -5,8 +38,9 @@
         ?>
 
         <div class="col-md-4">
-            <?php
-            $siteFunctions->debug(); ?>
+            <?php $siteFunctions->debug(); ?>
+            <?php $siteFunctions->debug(); ?>
+            <?php $siteFunctions->debug(); ?>
         </div>
         <div class="col-md-8">
             <?php

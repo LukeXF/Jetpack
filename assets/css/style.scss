@@ -69,6 +69,42 @@ body {
         border: 1px solid #222;
     }
 
+    .container-header {
+        margin: -140px 0 20px;
+        padding: 75px 0 0;
+        background: url('../img/bg.png') center;
+        background-size: cover !important;
+        h1 {
+            padding: 100px 0;
+            color: white;
+        }
+    }
+    .container-promo {
+        .row > div {
+            padding: 10px;
+            color: white;
+            margin-top: -20px;
+            .promo {
+
+                background: #000;
+                margin: -10px -8px 0;
+                padding: 1px 10px 10px 50%;
+                h2 {
+                    font-weight: 100;
+                }
+            }
+            &:first-of-type .promo {
+                margin-left: -15px;
+            }
+            &:last-of-type .promo {
+                margin-right: -10px;
+            }
+            &:nth-child(even) .promo {
+                background: #053368;
+            }
+        }
+    }
+
 }
 
 // Styling for forms
@@ -185,18 +221,20 @@ body {
 // navbar styling
 nav {
 
-    background-color: white !important;
-
-    .navbar-brand > img {
-        height: 100%;
-        margin-top: 0;
+    background-color: white;
+    .navbar-header {
+        padding-left: 22px;
+        .navbar-brand > img {
+            margin-top: 0;
+            height: 100%;
+        }
     }
 
     img.nav-image {
         display: -webkit-inline-box;
-        height: 40px;
-        margin: -20px 10px -20 0;
-        border-radius: 50px;
+        height: 22px;
+        margin: -22px -10px -20 0;
+        border-radius: 5px;
     }
 
     .navbar-nav {
@@ -231,6 +269,62 @@ nav {
         margin: -9px -2px -7px;
         text-align: right;
     }
+
+    &.navbar-mini {
+        background: #fff;
+        height: 40px;
+        min-height: 40px;
+        margin-bottom: 0;
+
+        .navbar-nav > li {
+            a {
+                padding: 10px 10px;
+                font-size: 15px;
+                border-right: 1px solid #ddd;
+                color: #999;
+            }
+            &:last-of-type a {
+                border-right: transparent;
+            }
+        }
+    }
+
+    &.navbar-homepage {
+        background-color: rgba(0, 0, 0, 0.1);
+        border: transparent;
+        color: white;
+
+        .navbar-nav > .active > a,
+        .navbar-nav > .active > a:hover,
+        .navbar-nav > .active > a:focus {
+            color: white;
+        }
+        .navbar-nav > li > a {
+            @extend .animate;
+            color: #eee;
+            &:hover {
+                color: white;
+            }
+        }
+
+        &.navbar-mini {
+            background: rgba(32, 32, 32, 0.3);
+
+            .navbar-nav > li {
+                a {
+                    border-right: 1px solid rgba(255, 255, 255, 0.1);
+                    color: #ddd;
+                    &:hover {
+                        color: white;
+                    }
+                }
+                &:last-of-type a {
+                    border-right: transparent;
+                }
+            }
+        }
+    }
+
 
 }
 
@@ -598,4 +692,9 @@ nav {
         border-radius: 50px;
     }
 
+}
+
+footer {
+    background: #222;
+    color: white;
 }

@@ -2,7 +2,9 @@
     body {
         background: /* top, transparent black */ linear-gradient( rgba(8, 8, 8, 0.25), rgba(0, 0, 0, 0.15) ), /* bottom, image */ url(<?php echo $domain; ?>assets/img/bg.jpg) no-repeat center center;
         background-size: cover;
-        padding-top: 200px;
+    }
+    .contentbox {
+        margin-top: 100px;
     }
 </style>
 

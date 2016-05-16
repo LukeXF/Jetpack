@@ -74,8 +74,6 @@ class Orders extends siteFunctions
             $paymentType = $braintreeResponse->transaction->paymentInstrumentType;
             $paymentId   = $braintreeResponse->transaction->id;
 
-            $this->debug($data, "Cart debug");
-
             $shippingPrice = 5.45;
             $shipping = 0;
             $itemsTotal = 0;
@@ -93,12 +91,12 @@ class Orders extends siteFunctions
             $this->addNewOrder($data, $paymentId, $paymentType, $shipping, $itemsTotal);
 
             for ($i = 0; $i < count($_SESSION['cart']); $i++) {
-                $this->debug($_SESSION['cart'][$i]);
                 $this->addItemsToOrder($_SESSION['cart'][$i], $paymentId);
             }
 
             unset($_SESSION['cart']);
 
+            $this->email("Reviewing", $_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['user_email'], $paymentId);
 
             $this->callbackMessage("Your order #" . $paymentId . " has been successfully placed, we will review it and keep you updated.", "success");
 
@@ -257,8 +255,19 @@ VALUES(:items_order_id, :items_product_id, :items_name, :items_price, :items_qua
                 } else {
                     die($this->callback("orders"));
                 }
+            } elseif ($_SESSION['user_id'] == $orders['order_user'] && $_SESSION['user_account_type'] == "admin") {
+                echo '
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2">
+                                <div class="box">
+                                ' .  '
+                                    <img src="' . $this->getAvatar($_SESSION['user_email']) . '">
+                                    Please note that you are an admin and you are also viewing your own order.
+                                </div>
+                            </div>
+                        </div>
+                    ';
             }
-
 
             echo '
                 <div class="row">
@@ -353,17 +362,39 @@ VALUES(:items_order_id, :items_product_id, :items_name, :items_price, :items_qua
         </div>';
     }
 
-    public function email($emailType, $postData)
+    public function email($emailType, $user_id, $user_name, $user_email, $order_id)
     {
         global $brand;
         global $currency;
 
-        $vars['user_name'] = $postData['emailData']['user_full_name'];
-        $vars['user_id'] = $postData['emailData']['user_id'];
-        $vars['user_email'] = $postData['emailData']['user_email'];
+        $vars['user_id'] = $user_id;
+        $vars['user_name'] = $user_name;
+        $vars['user_email'] = $user_email;
 
-        if ($emailType == "dispatched") {
-            $order_id = 'jm3dgj';
+        if ($emailType == "Reviewing") {
+
+            $order_info = $this->getOrders($order_id);
+
+            $vars['subject']    = $brand . ' - Order '  . strtoupper($order_id) . ' created';
+            $vars['to']         = array('email' => $vars['user_email'], 'name' => $vars['user_name']);
+            $vars['intro']      = "Order Update";
+            $vars['header']     = "Your order has been dispatched";
+            $vars['text']       = "Hi again " . $user_name . ", your order is now been progressing and we will email you when there is an update. Click the button below to view it on our website.";
+            $vars['link']       = $this->url("orders", array('product'=>$order_id));
+            $vars['button']     = "View Order";
+            $vars['shipping']   = $currency . $order_info[0]['order_shipping_total'];
+            $vars['total']      = $currency . $order_info[0]['order_grand_total'];
+
+            $order = $this->getOrderItems($order_id);
+
+            for ($i = 0; $i < count($order); $i++) {
+                $vars['orders'][$i]['item_image']       = $this->getProductInfo($order[$i]['items_product_id'])[0]['product_image_one'];
+                $vars['orders'][$i]['item_quantity']    = $order[$i]['items_quantity'];
+                $vars['orders'][$i]['item_name']        = $order[$i]['items_name'];
+                $vars['orders'][$i]['item_price']       = $currency . $order[$i]['items_price'];
+            }
+
+        } elseif ($emailType == "dispatched") {
 
             $order_info = $this->getOrders($order_id);
 
@@ -378,6 +409,7 @@ VALUES(:items_order_id, :items_product_id, :items_name, :items_price, :items_qua
             $vars['total']      = $currency . $order_info[0]['order_grand_total'];
 
             $order = $this->getOrderItems($order_id);
+
             for ($i = 0; $i < count($order); $i++) {
                 $vars['orders'][$i]['item_image']       = $this->getProductInfo($order[$i]['items_product_id'])[0]['product_image_one'];
                 $vars['orders'][$i]['item_quantity']    = $order[$i]['items_quantity'];
